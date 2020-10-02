@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">@color/logo_first</color>
+
+    <color name="logo_first">#7B63FF</color>
+    <color name="logo_second">#74DFEF</color>
+
+    <color name="green">#00FF00</color>
+    <color name="light_green">#38D414</color>
+    <color name="white">#ffffff</color>
+    <color name="custom_blue">#51A7E0</color>
+    <color name="ok_btn_color">#1176AE</color>
+    <color name="navy">#000080</color>
+    <color name="midnight_blue">#191970</color>
+    <color name="app_primary_color">#FFF</color>
+    <color name="app_primary_light_color">#61C5B2</color>
+    <color name="app_primary_lighter_color">#F8FFFE</color>
+    <color name="app_primary_dark_color">#006956</color>
+    <color name="black">#000000</color>
+    <color name="rich_black">#010203</color>
+    <color name="dark_grey">#A9A9A9</color>
+    <color name="darker_grey">#9C9C9C</color>
+    <color name="dark_green">#099109</color>
+    <color name="dark_red">#DF281C</color>
+    <color name="faint_red">#F44336</color>
+    <color name="pink">#ff1493</color>
+    <color name="light_red">#FFC0C0</color>
+    <color name="snow_white">#FFFAFA</color>
+    <color name="gold">#FFD700</color>
+    <color name="dim_gray">#505050</color>
+    <color name="faint_gray">#D3D3D3</color>
+    <color name="chat_background">#F3F6FB</color>
+    <color name="text_color">#0B1A4B</color>
+    <color name="silver">#666664</color>
+    <color name="add_company_btn_color">#5BD738</color>
+    <color name="no_results_msg_color">#6B788B</color>
+    <color name="drive_status_color">#818EE4</color>
+</resources>

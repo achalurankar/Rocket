@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/chat_background"
+    tools:context=".MessageActivity">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="10dp">
+
+        <RelativeLayout
+            android:id="@+id/ImageParentLayout"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/back"
+            android:background="@drawable/profile_image_shape"
+            android:gravity="center">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="36dp">
+
+                <ImageView
+                    android:id="@+id/profile_pic"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/android_vector" />
+
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/abc_vector_test"
+            app:tint="@color/black" />
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/ImageParentLayout"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Username"
+                android:textColor="@color/text_color"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/user_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/username"
+                android:layout_marginRight="10dp"
+                android:ellipsize="marquee"
+                android:fontFamily="sans-serif-medium"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+
+                android:text=""
+                android:textColor="@color/darker_grey"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/MessageEditorET"
+        android:layout_below="@id/header"
+        android:layout_margin="10dp"
+        android:overScrollMode="never"
+        android:padding="10dp" />
+
+    <EditText
+        android:id="@+id/MessageEditorET"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:layout_toLeftOf="@id/SendBtnLayout"
+        android:background="@drawable/message_editor_drawable"
+        android:fontFamily="@font/boogaloo"
+        android:hint="type a message..."
+        android:paddingLeft="15dp"
+        android:textColor="@color/text_color"
+        android:textColorHint="@color/darker_grey"
+        android:textSize="17sp" />
+
+    <RelativeLayout
+        android:id="@+id/SendBtnLayout"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/send_btn_drawable"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/SendBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:paddingLeft="5dp"
+            android:src="@drawable/send_vector"
+            app:tint="@color/white" />
+    </RelativeLayout>
+
+</RelativeLayout>
