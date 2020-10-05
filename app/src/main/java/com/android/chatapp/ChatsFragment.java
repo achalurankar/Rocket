@@ -105,7 +105,7 @@ public class ChatsFragment extends Fragment {
 
             Picasso.with(getActivity())
                     .load(user.getPicUrl())
-                    .placeholder(R.drawable.android_vector)
+                    .placeholder(R.drawable.user_vector)
                     .into(holder.Icon);
         }
 

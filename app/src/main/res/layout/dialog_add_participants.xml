@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="5dp">
 
     <TextView
@@ -12,7 +12,7 @@
         android:fontFamily="sans-serif-black"
         android:text="Add Participants"
         android:textColor="@color/text_color"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/close_dialog"
@@ -21,10 +21,22 @@
         android:src="@drawable/close_vector"
         android:layout_alignParentRight="true"/>
 
+    <TextView
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-black"
+        android:text="Loading..."
+        android:layout_margin="15dp"
+        android:textColor="@color/text_color"
+        android:layout_below="@id/header_text"
+        android:textSize="14sp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/header_text"
         android:layout_margin="5dp" />
 

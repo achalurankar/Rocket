@@ -2,6 +2,7 @@ package com.android.chatapp;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -94,6 +96,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
                             message.setMessageId(documentSnapshot.get("messageId").toString());
                             message.setSenderName(documentSnapshot.get("senderName").toString());
                             message.setSenderId(documentSnapshot.get("senderId").toString());
+                            message.setSenderPicUrl(documentSnapshot.get("senderPicUrl").toString());
                             message.setText(documentSnapshot.get("text").toString());
                             message.setDate(documentSnapshot.get("date").toString());
                             message.setTime(documentSnapshot.get("time").toString());
@@ -119,6 +122,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
                 "" + GlobalClass.mSelectedGroup.getGroupId(),
                 "" + GlobalClass.LoggedInUser.getName(),
                 "" + GlobalClass.LoggedInUser.getId(),
+                "" + GlobalClass.LoggedInUser.getPicUrl(),
                 "" + Date,
                 "" + Time,
                 "" + MessageEditor.getText().toString().trim());
@@ -143,9 +147,10 @@ public class GroupMessagingActivity extends AppCompatActivity {
         final List<User> users = new ArrayList<>();
         mDialog.setContentView(R.layout.dialog_add_participants);
         Window window = mDialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         RecyclerView recyclerView = mDialog.findViewById(R.id.recycler_view);
         ImageView close = mDialog.findViewById(R.id.close_dialog);
+        final TextView loading = mDialog.findViewById(R.id.loading);
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -176,6 +181,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
                                     user.setPicUrl(documentSnapshot.get("picUrl").toString());
                                     users.add(user);
                                     adapter.notifyDataSetChanged();
+                                    loading.setVisibility(View.GONE);
                                 }
                             });
                 }
@@ -205,11 +211,16 @@ public class GroupMessagingActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull GroupMessageAdapter.GroupMessageViewHolder holder, int position) {
             Message message = mList.get(position);
             if (message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
-                holder.relativeLayout.setVisibility(View.GONE);
+                holder.ReceiverMsgLayout.setVisibility(View.GONE);
+                holder.ImageParentLayout.setVisibility(View.GONE);
                 holder.SenderMessage.setText(message.getText());
                 holder.Time.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
             } else {
                 holder.SenderMessage.setVisibility(View.GONE);
+                Picasso.with(mContext)
+                        .load(message.getSenderPicUrl())
+                        .placeholder(R.drawable.user_vector)
+                        .into(holder.ProfilePic);
                 holder.ReceiverMessage.setText(message.getText());
                 holder.SenderName.setText(message.getSenderName());
             }
@@ -229,15 +240,18 @@ public class GroupMessagingActivity extends AppCompatActivity {
         public class GroupMessageViewHolder extends RecyclerView.ViewHolder {
 
             TextView SenderName, ReceiverMessage, SenderMessage, Time;
-            RelativeLayout relativeLayout;
+            RelativeLayout ReceiverMsgLayout, ImageParentLayout;
+            ImageView ProfilePic;
 
             public GroupMessageViewHolder(View itemView) {
                 super(itemView);
-                relativeLayout = itemView.findViewById(R.id.receiver_msg_layout);
+                ReceiverMsgLayout = itemView.findViewById(R.id.receiver_msg_layout);
+                ImageParentLayout = itemView.findViewById(R.id.ImageParentLayout);
                 SenderName = itemView.findViewById(R.id.sender_name);
                 ReceiverMessage = itemView.findViewById(R.id.receiver_msg);
                 SenderMessage = itemView.findViewById(R.id.sender_msg);
                 Time = itemView.findViewById(R.id.time);
+                ProfilePic = itemView.findViewById(R.id.profile_pic);
             }
         }
     }

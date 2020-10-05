@@ -257,7 +257,7 @@
                                     android:layout_width="115dp"
                                     android:layout_height="115dp"
                                     android:scaleType="centerCrop"
-                                    android:src="@drawable/android_vector" />
+                                    android:src="@drawable/user_vector" />
 
                             </androidx.cardview.widget.CardView>
                         </RelativeLayout>

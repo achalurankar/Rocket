@@ -44,7 +44,7 @@ public class GroupsFragment extends Fragment {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addGroup();
+                startActivity(new Intent(getActivity(), GroupDetailsEditor.class));
             }
         });
         mRecyclerView.setHasFixedSize(true);
@@ -53,13 +53,6 @@ public class GroupsFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         updateGroups();
         return view;
-    }
-
-    public void addGroup() {
-        String Name = "Temp Group", Id = "" + System.currentTimeMillis(), PicUrl = "https://cdn0.iconfinder.com/data/icons/social-media-glyph-1/64/Facebook_Social_Media_User_Interface-39-512.png";
-        GroupInfo groupInfo = new GroupInfo("" + Id, "" + Name, "" + PicUrl);
-        FirebaseFirestore.getInstance().collection("groups").document(Id).set(groupInfo);
-        FirebaseFirestore.getInstance().collection("users/" + GlobalClass.LoggedInUser.getId() + "/groups").document(Id).set(groupInfo);
     }
 
     public void updateGroups() {

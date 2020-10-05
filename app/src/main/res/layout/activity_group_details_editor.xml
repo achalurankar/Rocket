@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/chat_background"
+    android:layout_height="match_parent"
+    tools:context=".GroupDetailsEditor">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/abc_vector_test"
+            app:tint="@color/black" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/back"
+            android:fontFamily="sans-serif-black"
+            android:text="New group"
+            android:textColor="@color/text_color"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/group_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_margin="10dp">
+
+        <RelativeLayout
+            android:id="@+id/ImageParentLayout"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/profile_image_shape"
+            android:gravity="center">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="25dp">
+
+                <ImageView
+                    android:id="@+id/group_icon"
+                    android:layout_width="53dp"
+                    android:layout_height="53dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/camera_vector"/>
+
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/group_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:layout_toRightOf="@id/ImageParentLayout"
+            android:hint="Type group subject here..."
+            android:paddingStart="13dp"
+            android:background="@drawable/register_form_drawable"
+            android:textColorHint="@color/darker_grey"
+            android:textSize="15sp"
+            android:fontFamily="@font/boogaloo"
+            android:textColor="@color/text_color"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@id/group_info"
+        android:fontFamily="sans-serif-black"
+        android:text="Add"
+        android:alpha="0.4"
+        android:textColor="@color/white"
+        android:background="@color/logo_first"/>
+
+    <TextView
+        android:id="@+id/progress_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/add"
+        android:fontFamily="@font/boogaloo"
+        android:text=""
+        android:textColor="@color/text_color"
+        android:textSize="16sp" />
+</RelativeLayout>

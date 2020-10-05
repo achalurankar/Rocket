@@ -6,7 +6,7 @@ package com.android.chatapp;
 
 public class Message {
     String MessageId, SenderId, ReceiverId, Text, Date, Time;
-    String GroupId, SenderName;
+    String GroupId, SenderName, SenderPicUrl;
 
     public Message() {
     }
@@ -20,13 +20,14 @@ public class Message {
         Time = time;
     }
 
-    public Message(String messageId, String groupId, String senderName, String senderId, String date, String time, String text) {
+    public Message(String messageId, String groupId, String senderName, String senderId, String senderPicUrl, String date, String time, String text) {
         MessageId = messageId;
         Text = text;
         Date = date;
         Time = time;
         SenderId = senderId;
         GroupId = groupId;
+        SenderPicUrl = senderPicUrl;
         SenderName = senderName;
     }
 
@@ -36,6 +37,14 @@ public class Message {
 
     public void setGroupId(String groupId) {
         GroupId = groupId;
+    }
+
+    public void setSenderPicUrl(String senderPicUrl) {
+        SenderPicUrl = senderPicUrl;
+    }
+
+    public String getSenderPicUrl() {
+        return SenderPicUrl;
     }
 
     public String getSenderName() {

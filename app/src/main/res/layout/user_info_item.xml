@@ -20,8 +20,8 @@
 
             <RelativeLayout
                 android:id="@+id/ImageParentLayout"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
                 android:layout_centerVertical="true"
                 android:background="@drawable/profile_image_shape"
                 android:gravity="center">
@@ -29,13 +29,12 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="36dp">
+                    app:cardCornerRadius="26dp">
 
                     <ImageView
                         android:id="@+id/icon"
-                        android:layout_width="65dp"
-                        android:layout_height="65dp"
-                        android:padding="10dp"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/android_vector" />
 
@@ -56,7 +55,7 @@
                     android:fontFamily="sans-serif-black"
                     android:paddingLeft="10dp"
                     android:text="Name"
-                    android:textSize="19sp" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/username"
@@ -66,23 +65,23 @@
                     android:fontFamily="@font/boogaloo"
                     android:paddingLeft="10dp"
                     android:text="username"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/AddFriend"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/add_image_drawable">
 
                 <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:padding="10dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:padding="5dp"
                     android:src="@drawable/add_friend_vector" />
             </RelativeLayout>
         </RelativeLayout>

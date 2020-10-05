@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GroupMessagingActivity"></activity>
+        <activity android:name=".GroupDetailsEditor"></activity>
+        <activity android:name=".GroupMessagingActivity" />
         <activity
             android:name=".RootChatsActivity"
             android:label="@string/title_activity_root_chats"
