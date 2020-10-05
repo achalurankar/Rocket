@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/chat_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <RelativeLayout
+            android:id="@+id/receiver_msg_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="35dp"
+            android:background="@drawable/receiver_drawable">
+
+            <TextView
+                android:id="@+id/sender_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="Achal Urankar"
+                android:textColor="@color/white"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp"
+                android:paddingRight="15dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/receiver_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sender_name"
+                android:fontFamily="@font/boogaloo"
+                android:paddingLeft="15dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="15dp"
+                android:paddingRight="15dp"
+                android:text="Hey man"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/sender_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/receiver_msg_layout"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="35dp"
+            android:background="@drawable/sender_drawable"
+            android:fontFamily="@font/boogaloo"
+            android:padding="15dp"
+            android:text="Hey, how are you"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/logo_first"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sender_msg"
+            android:fontFamily="@font/boogaloo"
+            android:paddingLeft="5dp"
+            android:paddingTop="2.5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2.5dp"
+            android:text="3:29 pm 23/09/2020"
+            android:textColor="@color/darker_grey"
+            android:textSize="13sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -62,7 +62,7 @@ public class MessageActivity extends AppCompatActivity {
         Username = findViewById(R.id.username);
         UserStatus = findViewById(R.id.user_status);
 
-        ReceiverId = ChatsActivity.mSelectedUser.getId();
+        ReceiverId = GlobalClass.mSelectedUser.getId();
         getMessages();
         SendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +76,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void updateRecipientInfo() {
-        Username.setText(ChatsActivity.mSelectedUser.getUsername());
+        Username.setText(GlobalClass.mSelectedUser.getUsername());
         FirebaseFirestore.getInstance().collection("user_status").document(ReceiverId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
@@ -90,7 +90,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
         Picasso.with(this)
-                .load(ChatsActivity.mSelectedUser.getPicUrl())
+                .load(GlobalClass.mSelectedUser.getPicUrl())
                 .placeholder(R.drawable.android_vector)
                 .into(ProfilePic);
     }

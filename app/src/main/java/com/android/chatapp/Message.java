@@ -2,10 +2,11 @@ package com.android.chatapp;
 
 /**
  * Modal class for message details
- * */
+ */
 
 public class Message {
     String MessageId, SenderId, ReceiverId, Text, Date, Time;
+    String GroupId, SenderName;
 
     public Message() {
     }
@@ -17,6 +18,32 @@ public class Message {
         Text = text;
         Date = date;
         Time = time;
+    }
+
+    public Message(String messageId, String groupId, String senderName, String senderId, String date, String time, String text) {
+        MessageId = messageId;
+        Text = text;
+        Date = date;
+        Time = time;
+        SenderId = senderId;
+        GroupId = groupId;
+        SenderName = senderName;
+    }
+
+    public String getGroupId() {
+        return GroupId;
+    }
+
+    public void setGroupId(String groupId) {
+        GroupId = groupId;
+    }
+
+    public String getSenderName() {
+        return SenderName;
+    }
+
+    public void setSenderName(String senderName) {
+        SenderName = senderName;
     }
 
     public String getDate() {

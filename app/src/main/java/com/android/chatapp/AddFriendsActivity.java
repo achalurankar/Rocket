@@ -134,10 +134,10 @@ public class AddFriendsActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     String id = list.get(position).getId();
                     String name = list.get(position).getUsername();
-                    addFriend(id, name);
+                    addUser(id, name);
                 }
             });
-            Picasso.with(AddFriendsActivity.this)
+            Picasso.with(mContext)
                     .load(user.getPicUrl())
                     .placeholder(R.drawable.android_vector)
                     .into(holder.Icon);
@@ -164,7 +164,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         }
     }
 
-    private void addFriend(String id, final String name) {
+    public void addUser(String id, final String name) {
         String currentUserId = GlobalClass.LoggedInUser.getId();
         Map<String, String> map = new HashMap<>();
         map.put("id", currentUserId);
@@ -188,7 +188,7 @@ public class AddFriendsActivity extends AppCompatActivity {
         RightNavBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), ChatsActivity.class));
+                startActivity(new Intent(getApplicationContext(), RootChatsActivity.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
             }
@@ -197,7 +197,7 @@ public class AddFriendsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(), ChatsActivity.class));
+        startActivity(new Intent(getApplicationContext(), RootChatsActivity.class));
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         finish();
     }

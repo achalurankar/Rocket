@@ -184,7 +184,7 @@ public class FriendRequestsActivity extends AppCompatActivity {
         LeftNavBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), ChatsActivity.class));
+                startActivity(new Intent(getApplicationContext(), RootChatsActivity.class));
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
             }
@@ -193,7 +193,7 @@ public class FriendRequestsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(), ChatsActivity.class));
+        startActivity(new Intent(getApplicationContext(), RootChatsActivity.class));
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         finish();
     }

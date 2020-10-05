@@ -113,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 FirebaseFirestore.getInstance().collection("user_status")
                                                         .document(GlobalClass.LoggedInUser.getId())
                                                         .set(map);
-                                                startActivity(new Intent(LoginActivity.this, ChatsActivity.class));
+                                                startActivity(new Intent(LoginActivity.this, RootChatsActivity.class));
                                                 finish();
                                             }
                                         });
