@@ -26,13 +26,12 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="36dp">
+                app:cardCornerRadius="25dp">
 
                 <ImageView
                     android:id="@+id/profile_pic"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:padding="10dp"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/android_vector" />
 
@@ -88,26 +87,68 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/MessageEditorET"
+        android:layout_above="@id/message_editor_layout"
         android:layout_below="@id/header"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:overScrollMode="never"
         android:padding="10dp" />
 
-    <EditText
-        android:id="@+id/MessageEditorET"
+    <RelativeLayout
+        android:id="@+id/message_editor_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         android:layout_toLeftOf="@id/SendBtnLayout"
-        android:background="@drawable/message_editor_drawable"
-        android:fontFamily="@font/boogaloo"
-        android:hint="type a message..."
-        android:paddingLeft="15dp"
-        android:textColor="@color/text_color"
-        android:textColorHint="@color/darker_grey"
-        android:textSize="17sp" />
+        android:background="@drawable/message_editor_drawable">
+
+        <ImageView
+            android:id="@+id/selected_image"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="5dp"
+            android:src="@drawable/photo_vector"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/close_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/close_vector"
+            android:visibility="gone"
+            app:tint="@color/logo_first" />
+
+        <EditText
+            android:id="@+id/MessageEditorET"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/selected_image"
+            android:layout_margin="5dp"
+            android:layout_toLeftOf="@id/select_image"
+            android:fontFamily="@font/boogaloo"
+            android:hint="type a message..."
+            android:inputType="text"
+            android:background="@drawable/message_editor_drawable"
+            android:paddingLeft="15dp"
+            android:textColor="@color/text_color"
+            android:textColorHint="@color/darker_grey"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/select_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/camera_vector"
+            app:tint="@color/logo_first" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/SendBtnLayout"

@@ -2,7 +2,9 @@ package com.android.chatapp;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +31,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,10 +51,15 @@ public class GroupMessagingActivity extends AppCompatActivity {
     ImageView SendBtn, Options;
     ImageView GroupIcon;
     EditText MessageEditor;
+    ImageView SelectImageBtn;
+    ImageView SelectedImage;
+    ImageView CloseBtn;
     String ReceiverId;
     TextView GroupName;
     TextView UserStatus;
     Dialog mDialog;
+    String Type = "text";
+    Uri mImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +70,9 @@ public class GroupMessagingActivity extends AppCompatActivity {
         Options = findViewById(R.id.options);
         mDialog = new Dialog(this);
         GroupIcon = findViewById(R.id.group_icon);
+        SelectImageBtn = findViewById(R.id.select_image);
+        SelectedImage = findViewById(R.id.selected_image);
+        CloseBtn = findViewById(R.id.close_btn);
         MessageEditor = findViewById(R.id.MessageEditorET);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -70,11 +84,31 @@ public class GroupMessagingActivity extends AppCompatActivity {
         SendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (MessageEditor.getText().toString().trim().length() != 0) {
+                if (MessageEditor.getText().toString().trim().length() != 0 || mImageUri != null) {
                     sendMessage();
                 }
             }
         });
+
+        SelectImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CropImage.activity()
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .start(GroupMessagingActivity.this);
+            }
+        });
+
+        CloseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mImageUri = null;
+                Type = "text";
+                SelectedImage.setVisibility(View.GONE);
+                CloseBtn.setVisibility(View.GONE);
+            }
+        });
+
         Options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,6 +116,38 @@ public class GroupMessagingActivity extends AppCompatActivity {
             }
         });
         getMessages();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                mImageUri = result.getUri();
+                Type = "image";
+                SelectedImage.setVisibility(View.VISIBLE);
+                CloseBtn.setVisibility(View.VISIBLE);
+                Picasso.with(GroupMessagingActivity.this)
+                        .load(mImageUri)
+                        .placeholder(R.drawable.exclamation_vector)
+                        .into(SelectedImage);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+                mImageUri = null;
+                Type = "text";
+                SelectedImage.setVisibility(View.GONE);
+                CloseBtn.setVisibility(View.GONE);
+                Toast.makeText(this, "Failed to select image Error : " + error, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            mImageUri = null;
+            Type = "text";
+            SelectedImage.setVisibility(View.GONE);
+            CloseBtn.setVisibility(View.GONE);
+            Toast.makeText(this, "Failed to select image", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void getMessages() {
@@ -97,7 +163,9 @@ public class GroupMessagingActivity extends AppCompatActivity {
                             message.setSenderName(documentSnapshot.get("senderName").toString());
                             message.setSenderId(documentSnapshot.get("senderId").toString());
                             message.setSenderPicUrl(documentSnapshot.get("senderPicUrl").toString());
+                            message.setPicUrl(documentSnapshot.get("picUrl").toString());
                             message.setText(documentSnapshot.get("text").toString());
+                            message.setType(documentSnapshot.get("type").toString());
                             message.setDate(documentSnapshot.get("date").toString());
                             message.setTime(documentSnapshot.get("time").toString());
                             mMessages.add(message);
@@ -110,14 +178,16 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     public void sendMessage() {
-        String MessageId = System.currentTimeMillis() + "";
+        final String MessageId = System.currentTimeMillis() + "";
         DateFormat df = new SimpleDateFormat("h:mm aa");
         Date date = new Date();
         String Time = "" + df.format(date);
         df = new SimpleDateFormat("dd/MM/yy");
         date = new Date();
         String Date = "" + df.format(date);
-        Message message = new Message(
+        final Message message = new Message(
+                "" + Type,
+                "",
                 "" + MessageId,
                 "" + GlobalClass.mSelectedGroup.getGroupId(),
                 "" + GlobalClass.LoggedInUser.getName(),
@@ -127,11 +197,40 @@ public class GroupMessagingActivity extends AppCompatActivity {
                 "" + Time,
                 "" + MessageEditor.getText().toString().trim());
 
-        FirebaseFirestore.getInstance().collection("groups/" + GlobalClass.mSelectedGroup.getGroupId() + "/messages")
-                .document(MessageId)
-                .set(message);
-
-        MessageEditor.setText("");
+        if (Type.equals("text")) {
+            FirebaseFirestore.getInstance().collection("groups/" + GlobalClass.mSelectedGroup.getGroupId() + "/messages")
+                    .document(MessageId)
+                    .set(message);
+            MessageEditor.setText("");
+        } else {
+            Toast.makeText(this, "Uploading image", Toast.LENGTH_SHORT).show();
+            SendBtn.setClickable(false);
+            SendBtn.setAlpha(0.4f);
+            SelectedImage.setVisibility(View.GONE);
+            CloseBtn.setVisibility(View.GONE);
+            FirebaseStorage.getInstance().getReference("sent_images").child("" + System.currentTimeMillis() + ".jpg")
+                    .putFile(mImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String PicUrl = uri.toString();
+                                    message.setPicUrl(PicUrl);
+                                    FirebaseFirestore.getInstance().collection("groups/" + GlobalClass.mSelectedGroup.getGroupId() + "/messages")
+                                            .document(MessageId)
+                                            .set(message);
+                                    Type = "text";
+                                    mImageUri = null;
+                                    MessageEditor.setText("");
+                                    SendBtn.setClickable(true);
+                                    SendBtn.setAlpha(1.0f);
+                                }
+                            });
+                        }
+                    });
+        }
     }
 
     public void updateGroupInfo() {
@@ -208,21 +307,48 @@ public class GroupMessagingActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull GroupMessageAdapter.GroupMessageViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull GroupMessageAdapter.GroupMessageViewHolder holder, final int position) {
             Message message = mList.get(position);
             if (message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
                 holder.ReceiverMsgLayout.setVisibility(View.GONE);
                 holder.ImageParentLayout.setVisibility(View.GONE);
-                holder.SenderMessage.setText(message.getText());
                 holder.Time.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+                if (message.getType().equals("text")) {
+                    holder.SenderMsgLayout.setVisibility(View.GONE);
+                    holder.TypeTextSenderMsg.setText(message.getText());
+                } else {
+                    holder.TypeTextSenderMsg.setVisibility(View.GONE);
+                    Picasso.with(mContext)
+                            .load(message.getPicUrl())
+                            .placeholder(R.drawable.camera_vector)
+                            .into(holder.SenderImage);
+                    holder.SenderMessage.setText(message.getText());
+                }
             } else {
-                holder.SenderMessage.setVisibility(View.GONE);
-                Picasso.with(mContext)
-                        .load(message.getSenderPicUrl())
-                        .placeholder(R.drawable.user_vector)
-                        .into(holder.ProfilePic);
+                holder.SenderMsgLayout.setVisibility(View.GONE);
+                holder.TypeTextSenderMsg.setVisibility(View.GONE);
+                if (message.getType().equals("text"))
+                    holder.ReceiverImage.setVisibility(View.GONE);
+                else {
+                    Picasso.with(mContext)
+                            .load(message.getPicUrl())
+                            .placeholder(R.drawable.camera_vector)
+                            .into(holder.ReceiverImage);
+                }
                 holder.ReceiverMessage.setText(message.getText());
-                holder.SenderName.setText(message.getSenderName());
+                if ((position + 1 != mList.size()
+                        && !mList.get(position + 1).getSenderId().equals(message.getSenderId()))
+                ||
+                    (position == mList.size() - 1 && !message.getSenderId().equals(GlobalClass.LoggedInUser.getId()))) {
+                    Picasso.with(mContext)
+                            .load(message.getSenderPicUrl())
+                            .placeholder(R.drawable.user_vector)
+                            .into(holder.ProfilePic);
+                    holder.SenderName.setText(message.getSenderName());
+                } else {
+                    holder.ImageParentLayout.setVisibility(View.INVISIBLE);
+                }
+                holder.ReceiverMessage.setText(message.getText());
             }
             holder.Time.setText(message.getTime() + " " + message.getDate());
         }
@@ -242,12 +368,20 @@ public class GroupMessagingActivity extends AppCompatActivity {
             TextView SenderName, ReceiverMessage, SenderMessage, Time;
             RelativeLayout ReceiverMsgLayout, ImageParentLayout;
             ImageView ProfilePic;
+            RelativeLayout SenderMsgLayout;
+            ImageView SenderImage;
+            ImageView ReceiverImage;
+            TextView TypeTextSenderMsg;
 
             public GroupMessageViewHolder(View itemView) {
                 super(itemView);
                 ReceiverMsgLayout = itemView.findViewById(R.id.receiver_msg_layout);
                 ImageParentLayout = itemView.findViewById(R.id.ImageParentLayout);
                 SenderName = itemView.findViewById(R.id.sender_name);
+                SenderImage = itemView.findViewById(R.id.sender_image);
+                ReceiverImage = itemView.findViewById(R.id.receiver_image);
+                SenderMsgLayout = itemView.findViewById(R.id.sender_msg_layout);
+                TypeTextSenderMsg = itemView.findViewById(R.id.type_text_sender_msg);
                 ReceiverMessage = itemView.findViewById(R.id.receiver_msg);
                 SenderMessage = itemView.findViewById(R.id.sender_msg);
                 Time = itemView.findViewById(R.id.time);
@@ -255,7 +389,6 @@ public class GroupMessagingActivity extends AppCompatActivity {
             }
         }
     }
-
 
     public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ImageViewHolder> {
         private Context mContext;

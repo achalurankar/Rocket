@@ -5,22 +5,30 @@ package com.android.chatapp;
  */
 
 public class Message {
-    String MessageId, SenderId, ReceiverId, Text, Date, Time;
-    String GroupId, SenderName, SenderPicUrl;
+    String ReceiverId, Seen; //extra attributes for personal messaging
+    String MessageId, Date, Time, Text, SenderId, Type, PicUrl; //common attributes
+    String GroupId, SenderName, SenderPicUrl; //extra attributes for group messaging
 
     public Message() {
+//        empty constructor
     }
 
-    public Message(String messageId, String senderId, String receiverId, String text, String date, String time) {
+    //personal messaging constructor
+    public Message(String type, String picUrl, String messageId, String senderId, String receiverId, String text, String date, String time, String seen) {
+        Type = type;
         MessageId = messageId;
         SenderId = senderId;
         ReceiverId = receiverId;
         Text = text;
         Date = date;
         Time = time;
+        Seen = seen;
+        PicUrl = picUrl;
     }
 
-    public Message(String messageId, String groupId, String senderName, String senderId, String senderPicUrl, String date, String time, String text) {
+    //group messaging constructor
+    public Message(String type, String picUrl, String messageId, String groupId, String senderName, String senderId, String senderPicUrl, String date, String time, String text) {
+        Type = type;
         MessageId = messageId;
         Text = text;
         Date = date;
@@ -29,6 +37,23 @@ public class Message {
         GroupId = groupId;
         SenderPicUrl = senderPicUrl;
         SenderName = senderName;
+        PicUrl = picUrl;
+    }
+
+    public String getPicUrl() {
+        return PicUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        PicUrl = picUrl;
+    }
+
+    public void setType(String type) {
+        Type = type;
+    }
+
+    public String getType() {
+        return Type;
     }
 
     public String getGroupId() {
@@ -101,5 +126,13 @@ public class Message {
 
     public String getText() {
         return Text;
+    }
+
+    public String getSeen() {
+        return Seen;
+    }
+
+    public void setSeen(String seen) {
+        Seen = seen;
     }
 }
