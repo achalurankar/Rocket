@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,14 +30,34 @@ import java.util.Map;
  */
 public class SplashScreen extends AppCompatActivity {
 
+    public static final int ANIM_DURATION = 600;
     ImageView Rocket;
-
+    Animation animation;
+    TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         Rocket = findViewById(R.id.rocket);
+        textView = findViewById(R.id.text);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        animation = AnimationUtils.loadAnimation(SplashScreen.this, R.anim.rocket_launch);
+        registerController();
+        checkUser();
+    }
+
+    private void start(){
+        textView.setVisibility(View.GONE);
+        Rocket.startAnimation(animation);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Rocket.setAlpha(0f);
+            }
+        }, ANIM_DURATION);
+    }
+
+    private void checkUser() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             String Email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
             GlobalClass.LoggedInUser.setEmail(Email);
@@ -53,25 +74,29 @@ public class SplashScreen extends AppCompatActivity {
                                 GlobalClass.LoggedInUser.setEmail(documentSnapshot.get("email").toString());
                                 GlobalClass.LoggedInUser.setPicUrl(documentSnapshot.get("picUrl").toString());
                             }
+                            start();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     startActivity(new Intent(SplashScreen.this, RootChatsActivity.class));
                                     finish();
                                 }
-                            }, 2000);
+                            }, ANIM_DURATION + 100);
                         }
                     });
         } else {
+            start();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     finish();
                 }
-            }, 4000);
+            }, ANIM_DURATION + 100);
         }
+    }
 
+    private void registerController() {
         AppController.getInstance().setOnVisibilityChangeListener(new AppController.ValueChangeListener() {
             @Override
             public void onChanged(Boolean value) {

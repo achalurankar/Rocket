@@ -347,6 +347,8 @@ public class GroupMessagingActivity extends AppCompatActivity {
                     holder.SenderName.setText(message.getSenderName());
                 } else {
                     holder.ImageParentLayout.setVisibility(View.INVISIBLE);
+                    holder.SenderName.setVisibility(View.GONE);
+
                 }
                 holder.ReceiverMessage.setText(message.getText());
             }

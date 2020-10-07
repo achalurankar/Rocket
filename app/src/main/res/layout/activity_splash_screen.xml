@@ -11,7 +11,19 @@
         android:id="@+id/rocket"
         android:layout_width="120dp"
         android:layout_height="120dp"
+        android:rotation="-45"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/rocket_4" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/just_logo" />
+        android:text="Preparing launch..."
+        android:fontFamily="@font/boogaloo"
+        android:textColor="@color/text_color"
+        android:textSize="16sp"/>
 
 </RelativeLayout>
