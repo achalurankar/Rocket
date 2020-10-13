@@ -34,6 +34,7 @@ public class SplashScreen extends AppCompatActivity {
     ImageView Rocket;
     Animation animation;
     TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,17 +45,6 @@ public class SplashScreen extends AppCompatActivity {
         animation = AnimationUtils.loadAnimation(SplashScreen.this, R.anim.rocket_launch);
         registerController();
         checkUser();
-    }
-
-    private void start(){
-        textView.setVisibility(View.GONE);
-        Rocket.startAnimation(animation);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Rocket.setAlpha(0f);
-            }
-        }, ANIM_DURATION);
     }
 
     private void checkUser() {
@@ -126,5 +116,16 @@ public class SplashScreen extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void start() {
+        textView.setVisibility(View.GONE);
+        Rocket.startAnimation(animation);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Rocket.setAlpha(0f);
+            }
+        }, ANIM_DURATION);
     }
 }
