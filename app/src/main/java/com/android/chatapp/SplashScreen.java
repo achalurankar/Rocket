@@ -69,6 +69,7 @@ public class SplashScreen extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     startActivity(new Intent(SplashScreen.this, RootChatsActivity.class));
+                                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                                     finish();
                                 }
                             }, ANIM_DURATION + 100);
@@ -80,6 +81,7 @@ public class SplashScreen extends AppCompatActivity {
                 @Override
                 public void run() {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     finish();
                 }
             }, ANIM_DURATION + 100);
