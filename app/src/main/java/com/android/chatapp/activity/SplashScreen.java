@@ -1,18 +1,18 @@
 package com.android.chatapp.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.android.chatapp.controller.AppController;
+import com.android.chatapp.service.LastSeenUpdater;
 import com.android.chatapp.util.GlobalClass;
 import com.android.chatapp.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,12 +20,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Splash screen activity
@@ -35,17 +29,15 @@ public class SplashScreen extends AppCompatActivity {
     public static final int ANIM_DURATION = 600;
     ImageView Rocket;
     Animation animation;
-    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         Rocket = findViewById(R.id.rocket);
-        textView = findViewById(R.id.text);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         animation = AnimationUtils.loadAnimation(SplashScreen.this, R.anim.rocket_launch);
-        registerController();
+        setController();
         checkUser();
     }
 
@@ -90,40 +82,19 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-    private void registerController() {
+    private void setController() {
         AppController.getInstance().setOnVisibilityChangeListener(new AppController.ValueChangeListener() {
             @Override
             public void onChanged(Boolean value) {
                 System.out.println(value);
-                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    DateFormat df = new SimpleDateFormat("h:mm aa dd/MM/yy");
-                    Date obj = new Date();
-                    final Map<String, String> map = new HashMap<>();
-                    if (value)
-                        map.put("status", "" + df.format(obj));
-                    else
-                        map.put("status", "online");
-                    String Email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                    FirebaseFirestore.getInstance().collection("users")
-                            .whereEqualTo("email", Email)
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                @Override
-                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                                        FirebaseFirestore.getInstance().collection("user_status")
-                                                .document(documentSnapshot.get("id").toString())
-                                                .set(map);
-                                    }
-                                }
-                            });
-                }
+                Intent foregroundIntent = new Intent(getApplicationContext(), LastSeenUpdater.class);
+                foregroundIntent.putExtra("isAppBackground", value);
+                ContextCompat.startForegroundService(getApplicationContext(), foregroundIntent);
             }
         });
     }
 
     private void start() {
-        textView.setVisibility(View.GONE);
         Rocket.startAnimation(animation);
         new Handler().postDelayed(new Runnable() {
             @Override

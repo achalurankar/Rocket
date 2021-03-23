@@ -1,6 +1,9 @@
 package com.android.chatapp.controller;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
@@ -53,6 +56,15 @@ public class AppController extends Application implements LifecycleObserver {
         super.onCreate();
         mInstance = this;
         // addObserver
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    "ForegroundChannel",
+                    "Example Service Channel",
+                    NotificationManager.IMPORTANCE_NONE
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 }
