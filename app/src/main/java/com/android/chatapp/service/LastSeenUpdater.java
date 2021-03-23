@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.android.chatapp.R;
 import com.android.chatapp.activity.RootChatsActivity;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -85,6 +86,11 @@ public class LastSeenUpdater extends Service {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            stopSelf();
+                        }
+                    }).addOnCanceledListener(new OnCanceledListener() {
+                        @Override
+                        public void onCanceled() {
                             stopSelf();
                         }
                     });
