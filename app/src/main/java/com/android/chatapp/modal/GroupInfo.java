@@ -1,10 +1,9 @@
-package com.android.chatapp;
+package com.android.chatapp.modal;
 
 public class GroupInfo {
     String GroupId, GroupName, PicUrl;
 
-    GroupInfo() {
-
+    public GroupInfo() {
     }
 
     public GroupInfo(String groupId, String groupName, String picUrl) {

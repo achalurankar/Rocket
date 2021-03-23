@@ -1,9 +1,13 @@
-package com.android.chatapp;
+package com.android.chatapp.activity;
 
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 
+import com.android.chatapp.util.GlobalClass;
+import com.android.chatapp.R;
+import com.android.chatapp.util.SectionsPagerAdapter;
+import com.android.chatapp.modal.User;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.viewpager.widget.ViewPager;
@@ -13,7 +17,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.chatapp.ui.frags.SectionsPagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 

@@ -1,4 +1,4 @@
-package com.android.chatapp;
+package com.android.chatapp.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.chatapp.controller.AppController;
+import com.android.chatapp.util.GlobalClass;
+import com.android.chatapp.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;

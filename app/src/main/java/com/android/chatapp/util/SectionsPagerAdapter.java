@@ -1,4 +1,4 @@
-package com.android.chatapp.ui.frags;
+package com.android.chatapp.util;
 
 import android.content.Context;
 
@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.android.chatapp.ChatsFragment;
-import com.android.chatapp.GroupsFragment;
 import com.android.chatapp.R;
+import com.android.chatapp.fragment.ChatsFragment;
+import com.android.chatapp.fragment.GroupsFragment;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to

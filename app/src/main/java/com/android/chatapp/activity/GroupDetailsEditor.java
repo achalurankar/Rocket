@@ -1,4 +1,4 @@
-package com.android.chatapp;
+package com.android.chatapp.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.chatapp.util.GlobalClass;
+import com.android.chatapp.modal.GroupInfo;
+import com.android.chatapp.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;

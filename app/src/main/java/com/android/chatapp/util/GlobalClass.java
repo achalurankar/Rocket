@@ -1,4 +1,7 @@
-package com.android.chatapp;
+package com.android.chatapp.util;
+
+import com.android.chatapp.modal.GroupInfo;
+import com.android.chatapp.modal.User;
 
 public class GlobalClass {
 

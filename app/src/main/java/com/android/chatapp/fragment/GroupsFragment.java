@@ -1,4 +1,4 @@
-package com.android.chatapp;
+package com.android.chatapp.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.chatapp.util.GlobalClass;
+import com.android.chatapp.R;
+import com.android.chatapp.activity.GroupDetailsEditor;
+import com.android.chatapp.activity.GroupMessagingActivity;
+import com.android.chatapp.modal.GroupInfo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;

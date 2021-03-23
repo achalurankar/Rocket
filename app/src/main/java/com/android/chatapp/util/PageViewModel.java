@@ -1,4 +1,4 @@
-package com.android.chatapp.ui.frags;
+package com.android.chatapp.util;
 
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;

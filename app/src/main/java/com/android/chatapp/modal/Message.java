@@ -1,4 +1,4 @@
-package com.android.chatapp;
+package com.android.chatapp.modal;
 
 /**
  * Modal class for message details

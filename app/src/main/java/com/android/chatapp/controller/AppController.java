@@ -1,4 +1,4 @@
-package com.android.chatapp;
+package com.android.chatapp.controller;
 
 import android.app.Application;
 import android.util.Log;

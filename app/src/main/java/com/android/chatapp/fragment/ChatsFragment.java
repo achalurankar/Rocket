@@ -1,4 +1,4 @@
-package com.android.chatapp;
+package com.android.chatapp.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.chatapp.util.GlobalClass;
+import com.android.chatapp.R;
+import com.android.chatapp.activity.MessageActivity;
+import com.android.chatapp.modal.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
