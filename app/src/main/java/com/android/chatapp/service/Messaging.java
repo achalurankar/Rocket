@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.android.chatapp.R;
 import com.android.chatapp.activity.RootChatsActivity;
+import com.android.chatapp.activity.SplashScreen;
 import com.android.chatapp.controller.AppController;
 import com.android.chatapp.util.TokenRefresher;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -32,7 +33,8 @@ public class Messaging extends FirebaseMessagingService {
         String title = remoteMessage.getData().get("Title");
         String message = remoteMessage.getData().get("Message");
         //intent for opening activity from notification
-        Intent intent = new Intent(getApplicationContext(), RootChatsActivity.class);
+        Intent intent = new Intent(getApplicationContext(), SplashScreen.class);
+        intent.setAction("Notification");
         //wrapper intent
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this, AppController.RECEIVED_MESSAGE_NOTIFICATION_CHANNEL_ID)

@@ -1,9 +1,5 @@
 package com.android.chatapp.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,26 +7,19 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.chatapp.R;
 import com.android.chatapp.controller.AppController;
 import com.android.chatapp.service.LastSeenUpdater;
-import com.android.chatapp.service.NotificationForeground;
 import com.android.chatapp.util.GlobalClass;
-import com.android.chatapp.R;
 import com.android.chatapp.util.TokenRefresher;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.HashMap;
-
-import javax.microedition.khronos.opengles.GL;
 
 /**
  * Splash screen activity
@@ -48,7 +37,8 @@ public class SplashScreen extends AppCompatActivity {
         Rocket = findViewById(R.id.rocket);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         animation = AnimationUtils.loadAnimation(SplashScreen.this, R.anim.rocket_launch);
-        setController();
+        if(!getIntent().getAction().equals("Notification"))
+            setController();
         checkUser();
     }
 
