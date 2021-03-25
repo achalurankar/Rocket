@@ -1,5 +1,6 @@
 package com.android.chatapp.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -10,16 +11,26 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.chatapp.controller.AppController;
 import com.android.chatapp.service.LastSeenUpdater;
+import com.android.chatapp.service.NotificationForeground;
 import com.android.chatapp.util.GlobalClass;
 import com.android.chatapp.R;
+import com.android.chatapp.util.TokenRefresher;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.HashMap;
+
+import javax.microedition.khronos.opengles.GL;
 
 /**
  * Splash screen activity
@@ -57,6 +68,7 @@ public class SplashScreen extends AppCompatActivity {
                                 GlobalClass.LoggedInUser.setId(documentSnapshot.get("id").toString());
                                 GlobalClass.LoggedInUser.setEmail(documentSnapshot.get("email").toString());
                                 GlobalClass.LoggedInUser.setPicUrl(documentSnapshot.get("picUrl").toString());
+                                TokenRefresher.updateToken(GlobalClass.LoggedInUser.getId());
                             }
                             start();
                             new Handler().postDelayed(new Runnable() {
@@ -85,11 +97,18 @@ public class SplashScreen extends AppCompatActivity {
     private void setController() {
         AppController.getInstance().setOnVisibilityChangeListener(new AppController.ValueChangeListener() {
             @Override
-            public void onChanged(Boolean value) {
-                System.out.println(value);
+            public void onChanged(Boolean isBackground) {
+                //to update last seen
                 Intent foregroundIntent = new Intent(getApplicationContext(), LastSeenUpdater.class);
-                foregroundIntent.putExtra("isAppBackground", value);
-                ContextCompat.startForegroundService(getApplicationContext(), foregroundIntent);
+                foregroundIntent.putExtra("isAppBackground", isBackground);
+                startService(foregroundIntent);
+                //to start notification channel
+//                Intent foregroundServiceNotificationIntent = new Intent(getApplicationContext(), NotificationForeground.class);
+//                if(isBackground){
+//                    ContextCompat.startForegroundService(getApplicationContext(), foregroundServiceNotificationIntent);
+//                }else {
+//                    stopService(foregroundServiceNotificationIntent);
+//                }
             }
         });
     }

@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">@color/logo_first</color>
     <color name="colorPrimaryDark">@color/logo_first</color>
-    <color name="colorAccent">@color/white</color>
+    <color name="colorAccent">@color/logo_first</color>
 
     <color name="logo_first">#7B63FF</color>
     <color name="logo_second">#74DFEF</color>

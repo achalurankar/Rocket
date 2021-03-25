@@ -1,7 +1,6 @@
 package com.android.chatapp.service;
 
 import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -11,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.android.chatapp.R;
-import com.android.chatapp.activity.RootChatsActivity;
+import com.android.chatapp.controller.AppController;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -21,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,8 +30,6 @@ import java.util.Map;
 
 public class LastSeenUpdater extends Service {
 
-    private static final String CHANNEL_ID = "ForegroundChannel";
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -39,15 +37,9 @@ public class LastSeenUpdater extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         boolean input = intent.getBooleanExtra("isAppBackground", true);
-        System.out.println("intent extra " + input);
-        Intent notificationIntent = new Intent(this, RootChatsActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Rocket")
-                .setContentText("Updating messages...")
+        Notification notification = new NotificationCompat.Builder(this, AppController.LAST_SEEN_CHANNEL_ID)
+                .setContentTitle("Updating messages...")
                 .setSmallIcon(R.drawable.rocket_vector)
-                .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
         setUserStatus(input);
@@ -70,9 +62,11 @@ public class LastSeenUpdater extends Service {
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            final String[] id = new String[1];
                             for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
+                                id[0] = documentSnapshot.get("id").toString();
                                 FirebaseFirestore.getInstance().collection("user_status")
-                                        .document(documentSnapshot.get("id").toString())
+                                        .document(id[0])
                                         .set(map)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
@@ -94,7 +88,8 @@ public class LastSeenUpdater extends Service {
                             stopSelf();
                         }
                     });
-        }
+        } else
+            stopSelf();
     }
 
     @Override

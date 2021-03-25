@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.android.chatapp.util.GlobalClass;
 import com.android.chatapp.R;
+import com.android.chatapp.util.TokenRefresher;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -112,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 FirebaseFirestore.getInstance().collection("user_status")
                                                         .document(GlobalClass.LoggedInUser.getId())
                                                         .set(map);
+                                                TokenRefresher.updateToken(GlobalClass.LoggedInUser.getId());
                                                 startActivity(new Intent(LoginActivity.this, RootChatsActivity.class));
                                                 finish();
                                             }

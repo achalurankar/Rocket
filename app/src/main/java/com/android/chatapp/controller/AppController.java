@@ -51,20 +51,25 @@ public class AppController extends Application implements LifecycleObserver {
         return mInstance;
     }
 
+    public static final String LAST_SEEN_CHANNEL_ID = "last_seen_channel_id";
+    public static final String NOTIFICATION_CHECKER_FOREGROUND_CHANNEL_ID = "notification_foreground_channel_id";
+    public static final String RECEIVED_MESSAGE_NOTIFICATION_CHANNEL_ID = "received_message_notification_channel_id";
+
     @Override
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        // addObserver
+        //create notification channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    "ForegroundChannel",
-                    "Example Service Channel",
-                    NotificationManager.IMPORTANCE_NONE
-            );
+            NotificationChannel foregroundChannel = new NotificationChannel(LAST_SEEN_CHANNEL_ID, "Sirius", NotificationManager.IMPORTANCE_NONE);
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHECKER_FOREGROUND_CHANNEL_ID, "Rigel", NotificationManager.IMPORTANCE_NONE);
+            NotificationChannel messageChannel = new NotificationChannel(RECEIVED_MESSAGE_NOTIFICATION_CHANNEL_ID, "Betelgeuse", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(serviceChannel);
+            manager.createNotificationChannel(foregroundChannel);
+            manager.createNotificationChannel(notificationChannel);
+            manager.createNotificationChannel(messageChannel);
         }
+        // addObserver
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 }

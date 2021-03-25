@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Rocket</string>
+    <string name="app_name">Scuti</string>
     <string name="title_activity_root_chats">RootChatsActivity</string>
     <string name="tab_text_1">Chats</string>
     <string name="tab_text_2">Groups</string>

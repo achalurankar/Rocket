@@ -6,8 +6,6 @@ import com.android.chatapp.modal.User;
 public class GlobalClass {
 
     public static User LoggedInUser = new User();
-
-
     public static User mSelectedUser;
     public static GroupInfo mSelectedGroup;
 }

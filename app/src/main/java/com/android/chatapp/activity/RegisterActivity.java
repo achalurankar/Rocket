@@ -195,7 +195,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
                                         public void onSuccess(Uri uri) {
-                                            ResponseMsg.setText("Updating database...");
+                                            ResponseMsg.setText("Finishing registration...");
                                             User user = new User(Id, Name, Username, Email, uri.toString());
                                             FirebaseFirestore.getInstance().collection("users")
                                                     .document("" + Id)

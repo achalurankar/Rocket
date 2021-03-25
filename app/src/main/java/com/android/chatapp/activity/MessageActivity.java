@@ -18,6 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.chatapp.modal.Data;
+import com.android.chatapp.modal.Packet;
+import com.android.chatapp.modal.ResponseBody;
+import com.android.chatapp.util.APIService;
+import com.android.chatapp.util.Client;
 import com.android.chatapp.util.GlobalClass;
 import com.android.chatapp.modal.Message;
 import com.android.chatapp.R;
@@ -40,6 +45,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Messaging activity, opens after selecting one added friends from chat activity
  */
@@ -55,16 +64,21 @@ public class MessageActivity extends AppCompatActivity {
     ImageView CloseBtn;
     EditText MessageEditor;
     String ReceiverId;
+    String ReceiverToken = "";
     TextView Username;
     TextView UserStatus;
     String Type = "text";
     Uri mImageUri;
+
+    //for sending notification
+    APIService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         mRecyclerView = findViewById(R.id.recycler_view);
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         SendBtn = findViewById(R.id.SendBtn);
         ProfilePic = findViewById(R.id.profile_pic);
         SelectImageBtn = findViewById(R.id.select_image);
@@ -77,14 +91,19 @@ public class MessageActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(linearLayoutManager);
         Username = findViewById(R.id.username);
         UserStatus = findViewById(R.id.user_status);
-
+        if (GlobalClass.mSelectedUser == null)
+            finish();
         ReceiverId = GlobalClass.mSelectedUser.getId();
+        attachListenerForReceiverToken();
+        updateRecipientInfo();
         getMessages();
         SendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (MessageEditor.getText().toString().trim().length() != 0 || mImageUri != null) {
                     sendMessage();
+                } else {
+                    Toast.makeText(MessageActivity.this, "Message empty", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -106,12 +125,18 @@ public class MessageActivity extends AppCompatActivity {
                 CloseBtn.setVisibility(View.GONE);
             }
         });
-        updateRecipientInfo();
-        setSeen();
     }
 
-    private void setSeen() {
-
+    private void attachListenerForReceiverToken() {
+        //get token
+        FirebaseFirestore.getInstance().collection("token").document(ReceiverId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+                if (documentSnapshot.get("token") != null) {
+                    ReceiverToken = documentSnapshot.get("token").toString();
+                }
+            }
+        });
     }
 
     @Override
@@ -200,6 +225,7 @@ public class MessageActivity extends AppCompatActivity {
         df = new SimpleDateFormat("dd/MM/yy");
         date = new Date();
         final String Date = "" + df.format(date);
+        String messageText = MessageEditor.getText().toString().trim();
         if (Type.equals("text")) {
             Message message = new Message(
                     "" + Type,
@@ -207,7 +233,7 @@ public class MessageActivity extends AppCompatActivity {
                     "" + MessageId,
                     "" + GlobalClass.LoggedInUser.getId(),
                     "" + ReceiverId,
-                    "" + MessageEditor.getText().toString().trim(),
+                    "" + messageText,
                     "" + Date,
                     "" + Time,
                     "0");
@@ -219,6 +245,7 @@ public class MessageActivity extends AppCompatActivity {
             FirebaseFirestore.getInstance().collection("chat_logs/" + ReceiverId + "/" + GlobalClass.LoggedInUser.getId())
                     .document(MessageId)
                     .set(message);
+            sendNotification(messageText);
 
             MessageEditor.setText("");
         } else {
@@ -259,6 +286,7 @@ public class MessageActivity extends AppCompatActivity {
                                     MessageEditor.setText("");
                                     SendBtn.setClickable(true);
                                     SendBtn.setAlpha(1.0f);
+                                    sendNotification("sent a file.");
                                 }
                             });
                         }
@@ -266,7 +294,29 @@ public class MessageActivity extends AppCompatActivity {
         }
     }
 
-    public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
+    private void sendNotification(String message) {
+        if (ReceiverToken.equals(""))
+            return;
+        Data data = new Data(GlobalClass.LoggedInUser.getName(), message);
+        Packet packet = new Packet(data, ReceiverToken);
+        apiService.sendNotification(packet).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.code() == 200) {
+                    if (response.body().success == 1) {
+                        System.out.println("message sent");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public static class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
         private Context mContext;
         private List<Message> list;
 
