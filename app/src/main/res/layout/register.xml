@@ -162,7 +162,7 @@
                             android:background="@drawable/register_form_drawable"
                             android:elevation="6dp"
                             android:fontFamily="@font/boogaloo"
-                            android:hint="\@username"
+                            android:hint="username"
                             android:paddingLeft="10dp"
                             android:textColor="@color/text_color"
                             android:textSize="16sp" />

@@ -120,7 +120,7 @@ public class FriendRequestsActivity extends AppCompatActivity {
             });
             Picasso.with(FriendRequestsActivity.this)
                     .load(user.getPicUrl())
-                    .placeholder(R.drawable.android_vector)
+                    .placeholder(R.drawable.user_vector)
                     .into(holder.Icon);
         }
 

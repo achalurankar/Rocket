@@ -69,7 +69,8 @@ public class AddFriendsActivity extends AppCompatActivity {
                 if (mUsers.size() != 0 && charSequence.length() != 0) {
                     mSearchResultList.clear();
                     for (User user : mUsers) {
-                        if (user.getUsername().contains(charSequence) || user.getName().contains(charSequence)) {
+                        if (user.getUsername().toLowerCase().indexOf(charSequence.toString().toLowerCase()) == 0
+                                || user.getName().toLowerCase().indexOf(charSequence.toString().toLowerCase()) == 0) {
                             mSearchResultList.add(user);
                         }
                     }

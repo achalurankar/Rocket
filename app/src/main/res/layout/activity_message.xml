@@ -89,16 +89,18 @@
         android:layout_height="match_parent"
         android:layout_above="@id/message_editor_layout"
         android:layout_below="@id/header"
-        android:layout_margin="5dp"
         android:overScrollMode="never"
-        android:padding="10dp" />
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
 
     <RelativeLayout
         android:id="@+id/message_editor_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
         android:layout_toLeftOf="@id/SendBtnLayout"
         android:background="@drawable/message_editor_drawable">
 

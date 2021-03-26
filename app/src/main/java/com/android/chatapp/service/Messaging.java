@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -42,6 +43,7 @@ public class Messaging extends FirebaseMessagingService {
                 .setContentText(message)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
+                .setGroup(title)
                 .setSmallIcon(R.drawable.rocket_vector);
         NotificationManager manager;
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -49,3 +51,7 @@ public class Messaging extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
     }
 }
+
+//        SharedPreferences preferences = getSharedPreferences("NotificationIdCounter",Context.MODE_PRIVATE);
+//        int count = preferences.getInt("count",0);
+//        preferences.edit().putInt("count", count).apply();

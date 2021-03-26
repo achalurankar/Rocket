@@ -248,7 +248,7 @@ public class RegisterActivity extends AppCompatActivity {
                 mImageUri = result.getUri();
                 Picasso.with(getApplicationContext())
                         .load(mImageUri)
-                        .placeholder(R.drawable.android_vector)
+                        .placeholder(R.drawable.user_vector)
                         .into(ProfilePic);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();

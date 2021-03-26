@@ -37,8 +37,7 @@ public class SplashScreen extends AppCompatActivity {
         Rocket = findViewById(R.id.rocket);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         animation = AnimationUtils.loadAnimation(SplashScreen.this, R.anim.rocket_launch);
-        if(!getIntent().getAction().equals("Notification"))
-            setController();
+        setController();
         checkUser();
     }
 

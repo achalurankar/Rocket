@@ -125,6 +125,13 @@ public class MessageActivity extends AppCompatActivity {
                 CloseBtn.setVisibility(View.GONE);
             }
         });
+
+        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void attachListenerForReceiverToken() {
@@ -186,7 +193,7 @@ public class MessageActivity extends AppCompatActivity {
         });
         Picasso.with(this)
                 .load(GlobalClass.mSelectedUser.getPicUrl())
-                .placeholder(R.drawable.android_vector)
+                .placeholder(R.drawable.user_vector)
                 .into(ProfilePic);
     }
 
@@ -332,7 +339,7 @@ public class MessageActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(MessageViewHolder holder, final int position) {
+        public void onBindViewHolder(final MessageViewHolder holder, final int position) {
             Message message = list.get(position);
             if (message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
                 holder.ReceiverMsgLayout.setVisibility(View.GONE); // hiding receiver msg layout
@@ -362,6 +369,16 @@ public class MessageActivity extends AppCompatActivity {
                 holder.ReceiverMsg.setText(message.getText());
             }
             holder.Time.setText(message.getTime() + " " + message.getDate());
+            holder.Time.setVisibility(View.GONE);
+            holder.Item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(holder.Time.getVisibility() == View.VISIBLE)
+                        holder.Time.setVisibility(View.GONE);
+                    else
+                        holder.Time.setVisibility(View.VISIBLE);
+                }
+            });
         }
 
         @Override
@@ -379,6 +396,7 @@ public class MessageActivity extends AppCompatActivity {
             TextView SenderMsg, ReceiverMsg, Time, Seen;
             RelativeLayout SenderMsgLayout;
             RelativeLayout ReceiverMsgLayout;
+            RelativeLayout Item;
             ImageView SenderImage;
             ImageView ReceiverImage;
             TextView TypeTextSenderMsg;
@@ -386,6 +404,7 @@ public class MessageActivity extends AppCompatActivity {
             public MessageViewHolder(View itemView) {
                 super(itemView);
                 SenderMsg = itemView.findViewById(R.id.sender_msg);
+                Item = itemView.findViewById(R.id.item);
                 TypeTextSenderMsg = itemView.findViewById(R.id.type_text_sender_msg);
                 SenderImage = itemView.findViewById(R.id.sender_image);
                 ReceiverImage = itemView.findViewById(R.id.receiver_image);
