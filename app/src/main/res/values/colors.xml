@@ -32,9 +32,7 @@
     <color name="dim_gray">#505050</color>
     <color name="faint_gray">#D3D3D3</color>
     <color name="chat_background">#F3F6FB</color>
+    <color name="reply_bg">#CCC4F9</color>
     <color name="text_color">#0B1A4B</color>
     <color name="silver">#666664</color>
-    <color name="add_company_btn_color">#5BD738</color>
-    <color name="no_results_msg_color">#6B788B</color>
-    <color name="drive_status_color">#818EE4</color>
 </resources>

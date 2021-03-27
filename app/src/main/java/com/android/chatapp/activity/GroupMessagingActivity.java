@@ -384,10 +384,10 @@ public class GroupMessagingActivity extends AppCompatActivity {
                 SenderName = itemView.findViewById(R.id.sender_name);
                 SenderImage = itemView.findViewById(R.id.sender_image);
                 ReceiverImage = itemView.findViewById(R.id.receiver_image);
-                SenderMsgLayout = itemView.findViewById(R.id.sender_msg_layout);
-                TypeTextSenderMsg = itemView.findViewById(R.id.type_text_sender_msg);
+                SenderMsgLayout = itemView.findViewById(R.id.type_image_sender_msg_layout);
+                TypeTextSenderMsg = itemView.findViewById(R.id.type_text_reply_sender_msg);
                 ReceiverMessage = itemView.findViewById(R.id.receiver_msg);
-                SenderMessage = itemView.findViewById(R.id.sender_msg);
+                SenderMessage = itemView.findViewById(R.id.type_image_sender_msg);
                 Time = itemView.findViewById(R.id.time);
                 ProfilePic = itemView.findViewById(R.id.profile_pic);
             }

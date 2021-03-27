@@ -5,7 +5,7 @@ package com.android.chatapp.modal;
  */
 
 public class Message {
-    String ReceiverId, Seen; //extra attributes for personal messaging
+    String ReceiverId, ReplyTo = "", ReplyToOwner = ""; //extra attributes for personal messaging
     String MessageId, Date, Time, Text, SenderId, Type, PicUrl; //common attributes
     String GroupId, SenderName, SenderPicUrl; //extra attributes for group messaging
 
@@ -14,7 +14,7 @@ public class Message {
     }
 
     //personal messaging constructor
-    public Message(String type, String picUrl, String messageId, String senderId, String receiverId, String text, String date, String time, String seen) {
+    public Message(int settler, String type, String picUrl, String replyTo, String replyToOwner, String messageId, String senderId, String receiverId, String text, String date, String time) {
         Type = type;
         MessageId = messageId;
         SenderId = senderId;
@@ -22,7 +22,8 @@ public class Message {
         Text = text;
         Date = date;
         Time = time;
-        Seen = seen;
+        ReplyTo = replyTo;
+        ReplyToOwner = replyToOwner;
         PicUrl = picUrl;
     }
 
@@ -128,11 +129,19 @@ public class Message {
         return Text;
     }
 
-    public String getSeen() {
-        return Seen;
+    public String getReplyTo() {
+        return ReplyTo;
     }
 
-    public void setSeen(String seen) {
-        Seen = seen;
+    public void setReplyTo(String replyTo) {
+        ReplyTo = replyTo;
+    }
+
+    public String getReplyToOwner() {
+        return ReplyToOwner;
+    }
+
+    public void setReplyToOwner(String replyToOwner) {
+        ReplyToOwner = replyToOwner;
     }
 }

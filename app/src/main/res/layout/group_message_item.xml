@@ -82,7 +82,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/sender_msg_layout"
+            android:id="@+id/type_image_sender_msg_layout"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -90,7 +90,7 @@
             android:layout_below="@id/receiver_msg_layout">
 
             <TextView
-                android:id="@+id/sender_msg"
+                android:id="@+id/type_image_sender_msg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/boogaloo"
@@ -112,10 +112,10 @@
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/type_text_sender_msg"
+            android:id="@+id/type_text_reply_sender_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/sender_msg_layout"
+            android:layout_below="@id/type_image_sender_msg_layout"
             android:layout_alignParentRight="true"
             android:background="@drawable/sender_drawable"
             android:fontFamily="@font/boogaloo"
@@ -129,7 +129,7 @@
             android:id="@+id/time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/type_text_sender_msg"
+            android:layout_below="@id/type_text_reply_sender_msg"
             android:layout_toRightOf="@id/ImageParentLayout"
             android:fontFamily="@font/boogaloo"
             android:paddingLeft="5dp"

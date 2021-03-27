@@ -94,6 +94,41 @@
         android:paddingRight="10dp" />
 
     <RelativeLayout
+        android:id="@+id/reply_preview_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/message_editor_layout"
+        android:layout_marginLeft="10dp"
+        android:visibility="gone"
+        android:background="@drawable/reply_preview_bg"
+        android:layout_marginRight="10dp"
+        android:layout_toStartOf="@id/SendBtnLayout">
+
+        <TextView
+            android:id="@+id/reply_preview_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/boogaloo"
+            android:padding="15dp"
+            android:text=""
+            android:layout_toStartOf="@id/dismiss_reply_btn"
+            android:textColor="@color/text_color"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/dismiss_reply_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/close_vector"
+            app:tint="@color/white" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/message_editor_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
