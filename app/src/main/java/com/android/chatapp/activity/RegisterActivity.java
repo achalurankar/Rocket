@@ -151,7 +151,7 @@ public class RegisterActivity extends AppCompatActivity {
         Name = mFullNameET.getText().toString().trim();
         Email = mEmailET.getText().toString().trim();
         Password = mPasswordET.getText().toString().trim();
-        Username = mUsernameET.getText().toString().trim();
+        Username = mUsernameET.getText().toString().trim().toLowerCase();
         FirebaseFirestore.getInstance().collection("users")
                 .whereEqualTo("username", Username)
                 .get()
@@ -159,7 +159,6 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         boolean flag = true;
-                        System.out.println("Username Check");
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                             flag = false;
                         }

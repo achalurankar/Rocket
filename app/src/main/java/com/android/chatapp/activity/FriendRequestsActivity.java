@@ -162,6 +162,7 @@ public class FriendRequestsActivity extends AppCompatActivity {
                         FirebaseFirestore.getInstance().collection("users/" + currentUserID + "/friends").document(senderId).set(sender);
                         FirebaseFirestore.getInstance().collection("users/" + senderId + "/friends").document(currentUserID).set(currentUser);
                         Toast.makeText(FriendRequestsActivity.this, "request accepted", Toast.LENGTH_SHORT).show();
+                        getRequests();
                     }
                 });
     }
@@ -175,6 +176,7 @@ public class FriendRequestsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(FriendRequestsActivity.this, "request rejected", Toast.LENGTH_SHORT).show();
+                        getRequests();
                     }
                 });
     }

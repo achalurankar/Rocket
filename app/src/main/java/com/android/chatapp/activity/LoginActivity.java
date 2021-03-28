@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!mUsernameET.getText().toString().trim().equals("") && !mPasswordET.getText().toString().trim().equals("")) {
-                    String Username = mUsernameET.getText().toString().trim();
+                    String Username = mUsernameET.getText().toString().trim().toLowerCase();
                     FirebaseFirestore.getInstance().collection("users")
                             .whereEqualTo("username", Username)
                             .get()
