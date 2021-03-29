@@ -6,19 +6,20 @@ package com.android.chatapp.modal;
 
 public class Message {
     String ReceiverId, ReplyTo = "", ReplyToOwner = ""; //extra attributes for personal messaging
-    String MessageId, Date, Time, Text, SenderId, Type, PicUrl; //common attributes
-    String GroupId, SenderName, SenderPicUrl; //extra attributes for group messaging
+    String MessageId, Date, Time, Text, SenderId, Type, PicUrl, SenderName; //common attributes
+    String GroupId, SenderPicUrl; //extra attributes for group messaging
 
     public Message() {
 //        empty constructor
     }
 
     //personal messaging constructor
-    public Message(int settler, String type, String picUrl, String replyTo, String replyToOwner, String messageId, String senderId, String receiverId, String text, String date, String time) {
+    public Message(String type, String picUrl, String replyTo, String replyToOwner, String messageId, String senderName, String senderId, String receiverId, String text, String date, String time) {
         Type = type;
         MessageId = messageId;
         SenderId = senderId;
         ReceiverId = receiverId;
+        SenderName = senderName;
         Text = text;
         Date = date;
         Time = time;

@@ -91,13 +91,6 @@ public class SplashScreen extends AppCompatActivity {
                 Intent foregroundIntent = new Intent(getApplicationContext(), LastSeenUpdater.class);
                 foregroundIntent.putExtra("isAppBackground", isBackground);
                 startService(foregroundIntent);
-                //to start notification channel
-//                Intent foregroundServiceNotificationIntent = new Intent(getApplicationContext(), NotificationForeground.class);
-//                if(isBackground){
-//                    ContextCompat.startForegroundService(getApplicationContext(), foregroundServiceNotificationIntent);
-//                }else {
-//                    stopService(foregroundServiceNotificationIntent);
-//                }
             }
         });
     }

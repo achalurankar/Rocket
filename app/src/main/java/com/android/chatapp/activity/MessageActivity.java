@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,14 +19,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.chatapp.modal.Data;
 import com.android.chatapp.modal.Packet;
 import com.android.chatapp.modal.ResponseBody;
 import com.android.chatapp.util.APIService;
 import com.android.chatapp.util.Client;
+import com.android.chatapp.util.MessageDispatcher;
 import com.android.chatapp.util.GlobalClass;
 import com.android.chatapp.modal.Message;
 import com.android.chatapp.R;
+import com.android.chatapp.util.MessageListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -78,10 +80,14 @@ public class MessageActivity extends AppCompatActivity {
     APIService apiService;
     String ReplyToOwner;
 
+    //shared preferences
+    SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+        preferences = getSharedPreferences("scutiPreferences", Context.MODE_PRIVATE);
         mRecyclerView = findViewById(R.id.recycler_view);
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
         SendBtn = findViewById(R.id.SendBtn);
@@ -141,6 +147,8 @@ public class MessageActivity extends AppCompatActivity {
                 ReplyPreviewLayout.setVisibility(View.GONE);
             }
         });
+        //update app current state for notification generation
+        preferences.edit().putString("currentlyOpenedRecipient", GlobalClass.mSelectedUser.getId()).apply();
 
         findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,6 +156,37 @@ public class MessageActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        MessageDispatcher.setMessageListener(new MessageListener() {
+            @Override
+            public void onMessageReceived(Message message) {
+                if(message.getSenderId().equals(GlobalClass.mSelectedUser.getId())) {
+                    mMessages.add(0, message);
+                    setAdapter();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("destroyed");
+        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.out.println("paused");
+        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("resumed");
+        preferences.edit().putString("currentlyOpenedRecipient", GlobalClass.mSelectedUser.getId()).apply();
     }
 
     private void attachListenerForReceiverToken() {
@@ -216,11 +255,12 @@ public class MessageActivity extends AppCompatActivity {
     private void getMessages() {
         FirebaseFirestore.getInstance().collection("chat_logs/" + GlobalClass.LoggedInUser.getId() + "/" + ReceiverId)
                 .orderBy("messageId", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         mMessages.clear();
-                        for (DocumentSnapshot documentSnapshot : value.getDocuments()) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                             Message message = new Message();
                             message.setMessageId(documentSnapshot.get("messageId").toString());
                             message.setReceiverId(documentSnapshot.get("receiverId").toString());
@@ -230,17 +270,26 @@ public class MessageActivity extends AppCompatActivity {
                             message.setTime(documentSnapshot.get("time").toString());
                             message.setType(documentSnapshot.get("type").toString());
                             message.setPicUrl(documentSnapshot.get("picUrl").toString());
-                            if(documentSnapshot.get("replyTo") != null && documentSnapshot.get("replyToOwner") != null) {
+                            if (documentSnapshot.get("replyTo") != null && documentSnapshot.get("replyToOwner") != null) {
                                 message.setReplyTo(documentSnapshot.get("replyTo").toString());
                                 message.setReplyToOwner(documentSnapshot.get("replyToOwner").toString());
                             }
                             mMessages.add(message);
                         }
-                        mAdapter = new MessageAdapter(MessageActivity.this, mMessages);
-                        mAdapter.setHasStableIds(true);
-                        mRecyclerView.setAdapter(mAdapter);
+                        setAdapter();
                     }
                 });
+    }
+
+    private void setAdapter() {
+        MessageActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter = new MessageAdapter(MessageActivity.this, mMessages);
+                mAdapter.setHasStableIds(true);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+        });
     }
 
     private void sendMessage() {
@@ -254,12 +303,12 @@ public class MessageActivity extends AppCompatActivity {
         String messageText = MessageEditor.getText().toString().trim();
         if (Type.equals("text") || Type.equals("reply")) {
             Message message = new Message(
-                    0,
                     "" + Type,
                     "",
                     "" + ReplyTo,
                     "" + ReplyToOwner,
                     "" + MessageId,
+                    "" + GlobalClass.LoggedInUser.getName(),
                     "" + GlobalClass.LoggedInUser.getId(),
                     "" + ReceiverId,
                     "" + messageText,
@@ -273,8 +322,9 @@ public class MessageActivity extends AppCompatActivity {
             FirebaseFirestore.getInstance().collection("chat_logs/" + ReceiverId + "/" + GlobalClass.LoggedInUser.getId())
                     .document(MessageId)
                     .set(message);
-            sendNotification(messageText);
-
+            sendNotification(message);
+            mMessages.add(0, message);
+            setAdapter();
             MessageEditor.setText("");
         } else {
             Toast.makeText(this, "Uploading image", Toast.LENGTH_SHORT).show();
@@ -295,12 +345,12 @@ public class MessageActivity extends AppCompatActivity {
                                     if (text.equals(""))
                                         text = "photo";
                                     Message message = new Message(
-                                            0,
                                             "image",
                                             "" + PicUrl,
                                             "" + ReplyTo,
                                             "" + ReplyToOwner,
                                             "" + MessageId,
+                                            "" + GlobalClass.LoggedInUser.getName(),
                                             "" + GlobalClass.LoggedInUser.getId(),
                                             "" + ReceiverId,
                                             "" + text,
@@ -319,21 +369,22 @@ public class MessageActivity extends AppCompatActivity {
                                     MessageEditor.setText("");
                                     SendBtn.setClickable(true);
                                     SendBtn.setAlpha(1.0f);
-                                    sendNotification("sent a file.");
+                                    sendNotification(message);
+                                    mMessages.add(0, message);
+                                    setAdapter();
                                 }
                             });
                         }
                     });
         }
-        ReplyPreviewLayout.setVisibility(View.INVISIBLE);
+        ReplyPreviewLayout.setVisibility(View.GONE);
         Type = "text";
     }
 
-    private void sendNotification(String message) {
+    private void sendNotification(Message message) {
         if (ReceiverToken.equals(""))
             return;
-        Data data = new Data(GlobalClass.LoggedInUser.getName(), message);
-        Packet packet = new Packet(data, ReceiverToken);
+        Packet packet = new Packet(message, ReceiverToken);
         apiService.sendNotification(packet).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -389,14 +440,14 @@ public class MessageActivity extends AppCompatActivity {
                                 .load(message.getPicUrl())
                                 .placeholder(R.drawable.camera_vector)
                                 .into(holder.SenderImage);
-                        holder.TypeImageSenderMsg.setText(message.getText().equals("photo")? "" : message.getText());
+                        holder.TypeImageSenderMsg.setText(message.getText().equals("photo") ? "" : message.getText());
                         break;
                     case "reply":
                         holder.SenderReplyToText.setVisibility(View.VISIBLE);
                         holder.TypeTextReplySenderMsg.setVisibility(View.VISIBLE);
                         holder.TypeTextReplySenderMsg.setText(message.getText());
                         String text = "";
-                        if(message.getReplyToOwner().equals(GlobalClass.LoggedInUser.getName()))
+                        if (message.getReplyToOwner().equals(GlobalClass.LoggedInUser.getName()))
                             text = "You\n";
                         else
                             text = GlobalClass.mSelectedUser.getName() + "\n";
@@ -423,7 +474,7 @@ public class MessageActivity extends AppCompatActivity {
                     case "reply":
                         holder.ReceiverReplyLayout.setVisibility(View.VISIBLE);
                         String text = "";
-                        if(message.getReplyToOwner().equals(GlobalClass.LoggedInUser.getName()))
+                        if (message.getReplyToOwner().equals(GlobalClass.LoggedInUser.getName()))
                             text = "You\n";
                         else
                             text = GlobalClass.mSelectedUser.getName() + "\n";
@@ -437,7 +488,7 @@ public class MessageActivity extends AppCompatActivity {
             holder.Item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(holder.Time.getVisibility() == View.VISIBLE)
+                    if (holder.Time.getVisibility() == View.VISIBLE)
                         holder.Time.setVisibility(View.GONE);
                     else
                         holder.Time.setVisibility(View.VISIBLE);
@@ -449,11 +500,10 @@ public class MessageActivity extends AppCompatActivity {
                 public boolean onLongClick(View v) {
                     Type = "reply";
                     String text = "";
-                    if(message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
+                    if (message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
                         text = "You\n";
                         ReplyToOwner = GlobalClass.LoggedInUser.getName();
-                    }
-                    else {
+                    } else {
                         ReplyToOwner = GlobalClass.mSelectedUser.getName();
                         text = GlobalClass.mSelectedUser.getName() + "\n";
                     }

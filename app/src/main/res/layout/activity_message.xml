@@ -93,97 +93,104 @@
         android:paddingRight="10dp" />
 
     <RelativeLayout
-        android:id="@+id/reply_preview_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/message_editor_layout"
-        android:layout_marginLeft="11dp"
-        android:visibility="gone"
-        android:background="@drawable/reply_preview_bg"
-        android:layout_marginRight="11dp"
-        android:layout_marginBottom="-7dp"
-        android:layout_toStartOf="@id/SendBtnLayout">
-
-        <TextView
-            android:id="@+id/reply_preview_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/boogaloo"
-            android:padding="15dp"
-            android:text=""
-            android:layout_toStartOf="@id/dismiss_reply_btn"
-            android:textColor="@color/logo_first"
-            android:textSize="15sp" />
-
-        <ImageView
-            android:id="@+id/dismiss_reply_btn"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/close_vector"
-            app:tint="@color/logo_first" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
         android:id="@+id/message_editor_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@id/SendBtnLayout"
-        android:background="@drawable/message_editor_drawable">
+        android:layout_marginBottom="10dp"
+        android:layout_toLeftOf="@id/SendBtnLayout">
 
-        <ImageView
-            android:id="@+id/selected_image"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="5dp"
-            android:src="@drawable/photo_vector"
-            android:visibility="gone" />
-
-        <ImageView
-            android:id="@+id/close_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/close_vector"
-            android:visibility="gone"
-            app:tint="@color/logo_first" />
-
-        <EditText
-            android:id="@+id/MessageEditorET"
+        <RelativeLayout
+            android:id="@+id/reply_preview_layout"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/selected_image"
-            android:layout_margin="5dp"
-            android:layout_toLeftOf="@id/select_image"
-            android:fontFamily="@font/boogaloo"
-            android:hint="type a message..."
-            android:inputType="text"
-            android:background="@drawable/message_editor_drawable"
-            android:paddingLeft="15dp"
-            android:textColor="@color/text_color"
-            android:textColorHint="@color/text_color"
-            android:textSize="17sp" />
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginBottom="-22dp"
+            android:background="@drawable/reply_preview_bg">
 
-        <ImageView
-            android:id="@+id/select_image"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/camera_vector"
-            app:tint="@color/chat_background" />
+            <TextView
+                android:id="@+id/reply_preview_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/dismiss_reply_btn"
+                android:fontFamily="@font/boogaloo"
+                android:paddingLeft="15dp"
+                android:paddingTop="5dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="25dp"
+                android:text="achal urankar\nwefwegfwefwegweg"
+                android:textColor="@color/logo_first"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/dismiss_reply_btn"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/close_vector"
+                app:tint="@color/logo_first" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/message_editor_child_layout"
+            android:layout_below="@id/reply_preview_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/message_editor_drawable">
+
+            <ImageView
+                android:id="@+id/selected_image"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:src="@drawable/photo_vector"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/close_btn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/close_vector"
+                android:visibility="gone"
+                app:tint="@color/chat_background" />
+
+            <EditText
+                android:id="@+id/MessageEditorET"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@id/selected_image"
+                android:layout_margin="5dp"
+                android:layout_toLeftOf="@id/select_image"
+                android:background="@drawable/message_editor_drawable"
+                android:fontFamily="@font/boogaloo"
+                android:hint="type a message..."
+                android:inputType="text"
+                android:paddingLeft="15dp"
+                android:textColor="@color/text_color"
+                android:textColorHint="@color/text_color"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/select_image"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/camera_vector"
+                app:tint="@color/chat_background" />
+
+        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout

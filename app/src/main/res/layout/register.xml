@@ -24,7 +24,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginBottom="15dp"
                 android:elevation="8dp"
-                app:cardCornerRadius="5dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="8dp">
 
                 <RelativeLayout

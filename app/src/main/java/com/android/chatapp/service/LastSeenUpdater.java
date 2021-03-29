@@ -2,7 +2,9 @@ package com.android.chatapp.service;
 
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
@@ -34,14 +36,17 @@ public class LastSeenUpdater extends Service {
     public void onCreate() {
         super.onCreate();
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         boolean input = intent.getBooleanExtra("isAppBackground", true);
+        //foreground notification
         Notification notification = new NotificationCompat.Builder(this, AppController.LAST_SEEN_CHANNEL_ID)
                 .setContentTitle("Updating messages...")
                 .setSmallIcon(R.drawable.rocket_vector)
                 .build();
         startForeground(1, notification);
+        //set last seen status
         setUserStatus(input);
         return START_NOT_STICKY;
     }
@@ -83,11 +88,11 @@ public class LastSeenUpdater extends Service {
                             stopSelf();
                         }
                     }).addOnCanceledListener(new OnCanceledListener() {
-                        @Override
-                        public void onCanceled() {
-                            stopSelf();
-                        }
-                    });
+                @Override
+                public void onCanceled() {
+                    stopSelf();
+                }
+            });
         } else
             stopSelf();
     }
