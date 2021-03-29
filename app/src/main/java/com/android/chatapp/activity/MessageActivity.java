@@ -406,7 +406,6 @@ public class MessageActivity extends AppCompatActivity {
             } else {
                 // receiver message section
                 holder.SenderMsgParentLayout.setVisibility(View.GONE);
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.ReceiverMsg.getLayoutParams();
                 String type = message.getType();
                 holder.ReceiverImage.setVisibility(View.GONE);
                 holder.ReceiverReplyLayout.setVisibility(View.GONE);
@@ -416,7 +415,6 @@ public class MessageActivity extends AppCompatActivity {
                         break;
                     case "image":
                         holder.ReceiverImage.setVisibility(View.VISIBLE);
-                        params.addRule(RelativeLayout.BELOW, R.id.receiver_image);
                         Picasso.with(mContext)
                                 .load(message.getPicUrl())
                                 .placeholder(R.drawable.camera_vector)
@@ -424,7 +422,6 @@ public class MessageActivity extends AppCompatActivity {
                         break;
                     case "reply":
                         holder.ReceiverReplyLayout.setVisibility(View.VISIBLE);
-                        params.addRule(RelativeLayout.BELOW, R.id.receiver_reply_text_layout);
                         String text = "";
                         if(message.getReplyToOwner().equals(GlobalClass.LoggedInUser.getName()))
                             text = "You\n";
@@ -514,7 +511,7 @@ public class MessageActivity extends AppCompatActivity {
                 ReceiverMsg = itemView.findViewById(R.id.receiver_msg);
                 ReceiverMsgLayout = itemView.findViewById(R.id.receiver_msg_layout);
                 ReceiverImage = itemView.findViewById(R.id.receiver_image);
-                ReceiverReplyText = itemView.findViewById(R.id.receiver_reply_text);
+                ReceiverReplyText = itemView.findViewById(R.id.receiver_reply_to_text);
                 ReceiverReplyLayout = itemView.findViewById(R.id.receiver_reply_text_layout);
 
                 //common variables initializer

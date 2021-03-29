@@ -11,7 +11,7 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/dark_background"
         android:padding="10dp">
 
         <ImageView
@@ -91,7 +91,7 @@
         android:fontFamily="sans-serif-black"
         android:text="Add"
         android:alpha="0.4"
-        android:textColor="@color/white"
+        android:textColor="@color/dark_background"
         android:background="@color/logo_first"/>
 
     <TextView

@@ -16,7 +16,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
-        app:tint="@color/white"
+        app:tint="@color/dark_background"
         app:srcCompat="@drawable/add_button_asset"
         app:backgroundTint="@color/logo_first"/>
 

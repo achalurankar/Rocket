@@ -2,14 +2,14 @@
 <resources>
     <color name="colorPrimary">@color/logo_first</color>
     <color name="colorPrimaryDark">@color/logo_first</color>
-    <color name="colorAccent">@color/logo_first</color>
+    <color name="colorAccent">@color/chat_background</color>
 
-    <color name="logo_first">#7B63FF</color>
+    <color name="logo_first">@color/light_sage</color>
     <color name="logo_second">#74DFEF</color>
 
     <color name="green">#00FF00</color>
     <color name="light_green">#38D414</color>
-    <color name="white">#ffffff</color>
+    <color name="dark_background">#1F2025</color>
     <color name="custom_blue">#51A7E0</color>
     <color name="ok_btn_color">#1176AE</color>
     <color name="navy">#000080</color>
@@ -21,7 +21,7 @@
     <color name="black">#000000</color>
     <color name="rich_black">#010203</color>
     <color name="dark_grey">#A9A9A9</color>
-    <color name="darker_grey">#9C9C9C</color>
+    <color name="darker_grey">@color/white</color>
     <color name="dark_green">#099109</color>
     <color name="dark_red">#DF281C</color>
     <color name="faint_red">#F44336</color>
@@ -31,8 +31,13 @@
     <color name="gold">#FFD700</color>
     <color name="dim_gray">#505050</color>
     <color name="faint_gray">#D3D3D3</color>
-    <color name="chat_background">#F3F6FB</color>
+    <color name="chat_background">@color/dark_background</color>
     <color name="reply_bg">#CCC4F9</color>
-    <color name="text_color">#0B1A4B</color>
+    <color name="text_color">@color/chat_background</color>
     <color name="silver">#666664</color>
+    <color name="white">#fff</color>
+
+<!--app colors-->
+    <color name="m87">#FEB613</color>
+    <color name="light_sage">#9FC3B9</color>
 </resources>

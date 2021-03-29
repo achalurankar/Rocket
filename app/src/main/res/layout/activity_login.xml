@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
+    android:background="@color/dark_background"
     android:layout_height="match_parent"
     tools:context=".activity.LoginActivity">
 
@@ -17,12 +17,13 @@
         android:layout_marginRight="15dp"
         android:layout_marginBottom="15dp"
         android:elevation="8dp"
-        app:cardCornerRadius="5dp"
+        app:cardCornerRadius="10dp"
         app:cardElevation="8dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@drawable/form_drawable_bg">
 
             <TextView
                 android:id="@+id/header"
@@ -32,7 +33,7 @@
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/boogaloo"
                 android:text="Login"
-                android:textColor="@color/text_color"
+                android:textColor="@color/logo_first"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -63,7 +64,8 @@
                     android:fontFamily="@font/boogaloo"
                     android:hint="\@username"
                     android:paddingLeft="10dp"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
                     android:textSize="16sp" />
 
                 <TextView
@@ -86,7 +88,8 @@
                     android:hint="*********"
                     android:inputType="textPassword"
                     android:paddingLeft="10dp"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
                     android:textSize="16sp" />
 
                 <Button
@@ -102,7 +105,7 @@
                     android:paddingRight="45dp"
                     android:paddingBottom="10dp"
                     android:text="LOGIN"
-                    android:textColor="@color/white"
+                    android:textColor="@color/dark_background"
                     android:textSize="18sp" />
 
                 <LinearLayout
@@ -120,6 +123,7 @@
                         android:fontFamily="@font/boogaloo"
                         android:text="Don't have an account?"
                         android:textSize="16sp"
+                        android:textColor="@color/white"
                         android:textStyle="normal" />
 
                     <TextView

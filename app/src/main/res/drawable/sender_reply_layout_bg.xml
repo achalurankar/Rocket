@@ -3,5 +3,5 @@
 
     <solid android:color="@color/chat_background" />
     <stroke android:color="@color/logo_first" android:width="1dp"/>
-    <corners android:radius="6dp" />
+    <corners android:radius="15dp" />
 </shape>

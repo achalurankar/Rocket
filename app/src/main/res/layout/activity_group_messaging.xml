@@ -11,7 +11,7 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/dark_background"
         android:padding="10dp">
 
         <RelativeLayout
@@ -176,7 +176,7 @@
             android:layout_height="35dp"
             android:paddingLeft="5dp"
             android:src="@drawable/send_vector"
-            app:tint="@color/white" />
+            app:tint="@color/dark_background" />
     </RelativeLayout>
 
 </RelativeLayout>

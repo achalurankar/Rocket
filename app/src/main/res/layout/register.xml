@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/dark_background"
     tools:context=".activity.RegisterActivity">
 
     <ScrollView
@@ -29,7 +29,8 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/form_drawable_bg">
 
                     <TextView
                         android:id="@+id/header"
@@ -39,7 +40,7 @@
                         android:layout_marginTop="20dp"
                         android:fontFamily="@font/boogaloo"
                         android:text="Register"
-                        android:textColor="@color/text_color"
+                        android:textColor="@color/logo_first"
                         android:textSize="25sp"
                         android:textStyle="bold" />
 
@@ -120,7 +121,8 @@
                             android:fontFamily="@font/boogaloo"
                             android:hint="Enter Full name..."
                             android:paddingLeft="10dp"
-                            android:textColor="@color/text_color"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white"
                             android:textSize="16sp" />
 
                         <TextView
@@ -142,7 +144,8 @@
                             android:fontFamily="@font/boogaloo"
                             android:hint="someone@anymail.com"
                             android:paddingLeft="10dp"
-                            android:textColor="@color/text_color"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white"
                             android:textSize="16sp" />
 
                         <TextView
@@ -164,7 +167,8 @@
                             android:fontFamily="@font/boogaloo"
                             android:hint="username"
                             android:paddingLeft="10dp"
-                            android:textColor="@color/text_color"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white"
                             android:textSize="16sp" />
 
                         <TextView
@@ -187,7 +191,8 @@
                             android:hint="*********"
                             android:inputType="textPassword"
                             android:paddingLeft="10dp"
-                            android:textColor="@color/text_color"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white"
                             android:textSize="16sp" />
 
                         <TextView
@@ -210,7 +215,8 @@
                             android:hint="*********"
                             android:inputType="textPassword"
                             android:paddingLeft="10dp"
-                            android:textColor="@color/text_color"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white"
                             android:textSize="16sp" />
 
                         <Button
@@ -226,7 +232,7 @@
                             android:paddingRight="45dp"
                             android:paddingBottom="10dp"
                             android:text="NEXT"
-                            android:textColor="@color/white"
+                            android:textColor="@color/dark_background"
                             android:textSize="18sp" />
                     </LinearLayout>
 
@@ -325,7 +331,7 @@
                             android:paddingRight="45dp"
                             android:paddingBottom="10dp"
                             android:text="REGISTER"
-                            android:textColor="@color/white"
+                            android:textColor="@color/dark_background"
                             android:textSize="18sp" />
                     </RelativeLayout>
 
@@ -382,6 +388,7 @@
                     android:fontFamily="@font/boogaloo"
                     android:text="Already a member?"
                     android:textSize="16sp"
+                    android:textColor="@color/white"
                     android:textStyle="normal" />
 
                 <TextView

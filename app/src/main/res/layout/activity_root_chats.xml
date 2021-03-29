@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dark_background"
     tools:context=".activity.RootChatsActivity">
 
     <RelativeLayout
@@ -29,6 +30,7 @@
                 android:id="@+id/left_nav_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/snow_white"
                 android:layout_gravity="center_vertical"
                 android:fontFamily="@font/boogaloo"
                 android:text="Add friends" />
@@ -42,7 +44,7 @@
             android:layout_centerInParent="true"
             android:fontFamily="sans-serif-black"
             android:text="Chats"
-            android:textColor="@color/text_color"
+            android:textColor="@color/snow_white"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -57,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:textColor="@color/snow_white"
                 android:fontFamily="@font/boogaloo"
                 android:text="Requests" />
 
@@ -89,6 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tab_layout"
+        android:overScrollMode="never"
         android:layout_above="@id/logout_layout"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -107,7 +111,7 @@
             android:text="Your're logged in as "
             android:fontFamily="@font/boogaloo"
             android:textSize="14sp"
-            android:textColor="@color/text_color"/>
+            android:textColor="@color/snow_white"/>
 
         <TextView
             android:id="@+id/currentUsername"
@@ -116,7 +120,7 @@
             android:text="username"
             android:fontFamily="@font/boogaloo"
             android:textSize="14sp"
-            android:textColor="@color/text_color"/>
+            android:textColor="@color/logo_first"/>
 
         <TextView
             android:id="@+id/logout"
@@ -126,6 +130,6 @@
             android:paddingLeft="10dp"
             android:fontFamily="@font/boogaloo"
             android:textSize="14sp"
-            android:textColor="@color/logo_first"/>
+            android:textColor="@color/white"/>
     </LinearLayout>
 </RelativeLayout>

@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/chat_background"
+    android:background="@color/dark_background"
     tools:context=".activity.MessageActivity">
 
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/logo_first"
         android:padding="10dp">
 
         <RelativeLayout
@@ -33,7 +33,7 @@
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/android_vector" />
+                    android:src="@drawable/user_vector" />
 
             </androidx.cardview.widget.CardView>
         </RelativeLayout>
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
                 android:text="Username"
-                android:textColor="@color/text_color"
+                android:textColor="@color/chat_background"
                 android:textSize="16sp" />
 
             <TextView
@@ -75,9 +75,8 @@
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-
                 android:text=""
-                android:textColor="@color/darker_grey"
+                android:textColor="@color/chat_background"
                 android:textSize="14sp" />
         </RelativeLayout>
 
@@ -98,10 +97,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/message_editor_layout"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="11dp"
         android:visibility="gone"
         android:background="@drawable/reply_preview_bg"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="11dp"
+        android:layout_marginBottom="-7dp"
         android:layout_toStartOf="@id/SendBtnLayout">
 
         <TextView
@@ -112,19 +112,18 @@
             android:padding="15dp"
             android:text=""
             android:layout_toStartOf="@id/dismiss_reply_btn"
-            android:textColor="@color/text_color"
+            android:textColor="@color/logo_first"
             android:textSize="15sp" />
 
         <ImageView
             android:id="@+id/dismiss_reply_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
-            android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:src="@drawable/close_vector"
-            app:tint="@color/white" />
+            app:tint="@color/logo_first" />
 
     </RelativeLayout>
 
@@ -172,7 +171,7 @@
             android:background="@drawable/message_editor_drawable"
             android:paddingLeft="15dp"
             android:textColor="@color/text_color"
-            android:textColorHint="@color/darker_grey"
+            android:textColorHint="@color/text_color"
             android:textSize="17sp" />
 
         <ImageView
@@ -184,7 +183,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="15dp"
             android:src="@drawable/camera_vector"
-            app:tint="@color/logo_first" />
+            app:tint="@color/chat_background" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -203,7 +202,7 @@
             android:layout_height="35dp"
             android:paddingLeft="5dp"
             android:src="@drawable/send_vector"
-            app:tint="@color/white" />
+            app:tint="@color/chat_background" />
     </RelativeLayout>
 
 </RelativeLayout>

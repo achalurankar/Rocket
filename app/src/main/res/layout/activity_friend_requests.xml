@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/chat_background"
     tools:context=".activity.FriendRequestsActivity">
 
     <RelativeLayout
@@ -31,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:fontFamily="@font/boogaloo"
+                android:textColor="@color/white"
                 android:text="Chats" />
 
         </LinearLayout>
@@ -42,7 +44,7 @@
             android:layout_centerInParent="true"
             android:fontFamily="sans-serif-black"
             android:text="Requests"
-            android:textColor="@color/text_color"
+            android:textColor="@color/snow_white"
             android:textSize="20sp" />
 
     </RelativeLayout>

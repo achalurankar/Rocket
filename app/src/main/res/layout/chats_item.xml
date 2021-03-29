@@ -3,6 +3,7 @@
     android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/dark_background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
@@ -15,7 +16,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/logo_first">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,7 +43,7 @@
                             android:layout_width="65dp"
                             android:layout_height="65dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/android_vector" />
+                            android:src="@drawable/user_vector" />
 
                     </androidx.cardview.widget.CardView>
                 </RelativeLayout>
@@ -56,6 +58,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_toStartOf="@id/time"
+                        android:textColor="@color/text_color"
                         android:fontFamily="sans-serif-black"
                         android:paddingLeft="10dp"
                         android:text="Name and Username"
@@ -67,10 +70,10 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/name"
                         android:layout_toStartOf="@id/unread_count"
-                        android:fontFamily="@font/boogaloo"
+                        android:fontFamily="sans-serif-black"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:textColor="@color/darker_grey"
+                        android:textColor="@color/text_color"
                         android:text="Message"
                         android:textSize="13sp" />
 
