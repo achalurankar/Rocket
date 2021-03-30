@@ -1,3 +1,5 @@
 # Project Rocket
 
-## This is an android project
+## Simple Chat Application
+
+### With reply feature and notification
