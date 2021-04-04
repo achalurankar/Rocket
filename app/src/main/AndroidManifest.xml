@@ -7,29 +7,30 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
-    <uses-permission android:name="com.google.android.c2dm.permission.SEND"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.SEND" />
 
     <application
-        android:name="com.android.rocket.controller.AppController"
+        android:name=".controller.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.android.rocket.activity.GroupDetailsEditor"/>
-        <activity android:name="com.android.rocket.activity.GroupMessagingActivity" />
+        <activity android:name=".activity.SelectedImage"></activity>
+        <activity android:name=".activity.GroupDetailsEditor" />
+        <activity android:name=".activity.GroupMessagingActivity" />
         <activity
-            android:name="com.android.rocket.activity.RootChatsActivity"
+            android:name=".activity.RootChatsActivity"
             android:label="@string/title_activity_root_chats"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.android.rocket.activity.MessageActivity" />
-        <activity android:name="com.android.rocket.activity.RegisterActivity" />
-        <activity android:name="com.android.rocket.activity.FriendRequestsActivity" />
-        <activity android:name="com.android.rocket.activity.AddFriendsActivity" />
-        <activity android:name="com.android.rocket.activity.LoginActivity" />
-        <activity android:name="com.android.rocket.activity.SplashScreen">
+        <activity android:name=".activity.MessageActivity" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.FriendRequestsActivity" />
+        <activity android:name=".activity.AddFriendsActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,21 +45,21 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <service android:name="com.android.rocket.service.LastSeenUpdater" />
-        <service android:name="com.android.rocket.service.NotificationForeground" />
-
-        <service android:name="com.android.rocket.service.Messaging"
+        <service android:name=".service.LastSeenUpdater" />
+        <service android:name=".service.NotificationForeground" />
+        <service
+            android:name=".service.Messaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/rocket_vector" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/logo_first" />

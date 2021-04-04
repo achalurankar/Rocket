@@ -83,6 +83,8 @@ public class MessageActivity extends AppCompatActivity {
     //shared preferences
     SharedPreferences preferences;
 
+    public static String mSelectedImageUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,27 +168,6 @@ public class MessageActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        System.out.println("destroyed");
-        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        System.out.println("paused");
-        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        System.out.println("resumed");
-        preferences.edit().putString("currentlyOpenedRecipient", GlobalClass.mSelectedUser.getId()).apply();
     }
 
     private void attachListenerForReceiverToken() {
@@ -470,6 +451,13 @@ public class MessageActivity extends AppCompatActivity {
                                 .load(message.getPicUrl())
                                 .placeholder(R.drawable.camera_vector)
                                 .into(holder.ReceiverImage);
+                        holder.ReceiverImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mSelectedImageUrl = message.getPicUrl();
+                                startActivity(new Intent(getApplicationContext(), SelectedImage.class));
+                            }
+                        });
                         break;
                     case "reply":
                         holder.ReceiverReplyLayout.setVisibility(View.VISIBLE);
@@ -575,5 +563,28 @@ public class MessageActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("destroyed");
+        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.out.println("paused");
+        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("resumed");
+        preferences.edit().putString("currentlyOpenedRecipient", GlobalClass.mSelectedUser.getId()).apply();
     }
 }
