@@ -422,6 +422,13 @@ public class MessageActivity extends AppCompatActivity {
                                 .placeholder(R.drawable.camera_vector)
                                 .into(holder.SenderImage);
                         holder.TypeImageSenderMsg.setText(message.getText().equals("photo") ? "" : message.getText());
+                        holder.SenderImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mSelectedImageUrl = message.getPicUrl();
+                                startActivity(new Intent(getApplicationContext(), SelectedImage.class));
+                            }
+                        });
                         break;
                     case "reply":
                         holder.SenderReplyToText.setVisibility(View.VISIBLE);
