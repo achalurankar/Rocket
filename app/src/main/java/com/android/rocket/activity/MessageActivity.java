@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 
 import com.android.rocket.modal.Packet;
 import com.android.rocket.modal.ResponseBody;
+import com.android.rocket.util.Constants;
 import com.android.rocket.util.CustomNotification;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.MessageDispatcher;
@@ -28,6 +32,8 @@ import com.android.rocket.util.GlobalClass;
 import com.android.rocket.modal.Message;
 import com.android.rocket.R;
 import com.android.rocket.util.MessageListener;
+import com.android.rocket.util.TypingStatusDispatcher;
+import com.android.rocket.util.TypingStatusListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -89,6 +95,9 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+        if (GlobalClass.mSelectedUser == null)
+            finish();
+        ReceiverId = GlobalClass.mSelectedUser.getId();
         preferences = getSharedPreferences("scutiPreferences", Context.MODE_PRIVATE);
         mRecyclerView = findViewById(R.id.recycler_view);
         customNotification = Client.getClient("https://fcm.googleapis.com/").create(CustomNotification.class);
@@ -107,9 +116,6 @@ public class MessageActivity extends AppCompatActivity {
         Username = findViewById(R.id.username);
         ReplyPreviewText = findViewById(R.id.reply_preview_text);
         UserStatus = findViewById(R.id.user_status);
-        if (GlobalClass.mSelectedUser == null)
-            finish();
-        ReceiverId = GlobalClass.mSelectedUser.getId();
         attachListenerForReceiverToken();
         updateRecipientInfo();
         getMessages();
@@ -168,6 +174,7 @@ public class MessageActivity extends AppCompatActivity {
                 }
             }
         });
+        attachListenerForEditText();
     }
 
     private void attachListenerForReceiverToken() {
@@ -178,6 +185,70 @@ public class MessageActivity extends AppCompatActivity {
                 if (documentSnapshot.get("token") != null) {
                     ReceiverToken = documentSnapshot.get("token").toString();
                 }
+            }
+        });
+    }
+
+    //handler to manage calls for typing status of user
+    Handler mHandler = new Handler();
+    Runnable runnable;
+    Message TypingStatusPacket;
+    String OldStatus = "";
+    private void attachListenerForEditText(){
+        TypingStatusPacket = new Message();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                TypingStatusPacket.setType(Constants.TYPING_STATUS);
+                TypingStatusPacket.setText("online");
+                TypingStatusPacket.setSenderId(GlobalClass.LoggedInUser.getId());
+                OldStatus = "online";
+                sendNotification(TypingStatusPacket);
+            }
+        };
+        MessageEditor.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() == 0)
+                    return;
+                /*if old status. earlier, was typing then,
+                 no need to send packet again as its already displayed typing on the other side*/
+                if(!OldStatus.equals("typing...")) {
+                    Message message = new Message();
+                    message.setType(Constants.TYPING_STATUS);
+                    message.setText("typing...");
+                    message.setSenderId(GlobalClass.LoggedInUser.getId());
+                    sendNotification(message);
+                    OldStatus = "typing...";
+                }
+                //remove callback if user is still typing
+                mHandler.removeCallbacks(runnable);
+                //register again
+                mHandler.postDelayed(runnable, 2000);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        TypingStatusDispatcher.setTypingStatusListener(new TypingStatusListener() {
+            @Override
+            public void onStatusReceived(final Message message) {
+                MessageActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(!UserStatus.getText().toString().contains("last") && message.getSenderId().equals(ReceiverId)){
+                            UserStatus.setText(message.getText());
+                        }
+                    }
+                });
             }
         });
     }
@@ -571,8 +642,6 @@ public class MessageActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
     }
-
-
 
     @Override
     protected void onDestroy() {

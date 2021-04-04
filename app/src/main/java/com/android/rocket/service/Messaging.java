@@ -13,8 +13,11 @@ import com.android.rocket.R;
 import com.android.rocket.activity.SplashScreen;
 import com.android.rocket.controller.AppController;
 import com.android.rocket.modal.Message;
+import com.android.rocket.util.Constants;
 import com.android.rocket.util.MessageDispatcher;
 import com.android.rocket.util.TokenRefresher;
+import com.android.rocket.util.TypingStatusDispatcher;
+import com.android.rocket.util.TypingStatusListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -36,21 +39,29 @@ public class Messaging extends FirebaseMessagingService {
         Map<String, String> map = remoteMessage.getData();
         String type, picUrl, replyTo, replyToOwner, messageId, senderName, senderId, receiverId, text, date, time;
         type = map.get("Type");
+        text = map.get("Text");
+        senderId = map.get("SenderId");
+        if (type != null && type.equals(Constants.TYPING_STATUS)) {
+            Message message = new Message();
+            message.setType(type);
+            message.setText(text);
+            message.setSenderId(senderId);
+            TypingStatusDispatcher.dispatchStatus(message);
+            return;
+        }
         picUrl = map.get("PicUrl");
         replyTo = map.get("ReplyTo");
         replyToOwner = map.get("ReplyToOwner");
         messageId = map.get("MessageId");
         senderName = map.get("SenderName");
-        senderId = map.get("SenderId");
         receiverId = map.get("ReceiverId");
-        text = map.get("Text");
         date = map.get("Date");
         time = map.get("Time");
         Message message = new Message(type, picUrl, replyTo, replyToOwner, messageId, senderName, senderId, receiverId, text, date, time);
         MessageDispatcher.dispatchMessage(message);
         SharedPreferences preferences = getSharedPreferences("scutiPreferences", Context.MODE_PRIVATE);
-        String currentRecipient = preferences.getString("currentlyOpenedRecipient","0");
-        if(currentRecipient != null && !currentRecipient.equals(senderId))
+        String currentRecipient = preferences.getString("currentlyOpenedRecipient", "0");
+        if (currentRecipient != null && !currentRecipient.equals(senderId))
             generateNotification(senderName, text);
         super.onMessageReceived(remoteMessage);
     }
