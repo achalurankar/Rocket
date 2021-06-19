@@ -12,4 +12,8 @@ public class TypingStatusDispatcher {
     public static void dispatchStatus(Message message){
         mListener.onStatusReceived(message);
     }
+
+    public interface TypingStatusListener {
+        void onStatusReceived(Message message);
+    }
 }

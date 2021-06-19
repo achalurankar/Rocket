@@ -17,7 +17,6 @@ import com.android.rocket.util.Constants;
 import com.android.rocket.util.MessageDispatcher;
 import com.android.rocket.util.TokenRefresher;
 import com.android.rocket.util.TypingStatusDispatcher;
-import com.android.rocket.util.TypingStatusListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

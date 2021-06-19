@@ -31,9 +31,7 @@ import com.android.rocket.util.MessageDispatcher;
 import com.android.rocket.util.GlobalClass;
 import com.android.rocket.modal.Message;
 import com.android.rocket.R;
-import com.android.rocket.util.MessageListener;
 import com.android.rocket.util.TypingStatusDispatcher;
-import com.android.rocket.util.TypingStatusListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -165,7 +163,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        MessageDispatcher.setMessageListener(new MessageListener() {
+        MessageDispatcher.setMessageListener(new MessageDispatcher.MessageListener() {
             @Override
             public void onMessageReceived(Message message) {
                 if(message.getSenderId().equals(GlobalClass.mSelectedUser.getId())) {
@@ -238,7 +236,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        TypingStatusDispatcher.setTypingStatusListener(new TypingStatusListener() {
+        TypingStatusDispatcher.setTypingStatusListener(new TypingStatusDispatcher.TypingStatusListener() {
             @Override
             public void onStatusReceived(final Message message) {
                 MessageActivity.this.runOnUiThread(new Runnable() {
