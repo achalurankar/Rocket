@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.rocket.R;
-import com.android.rocket.util.GlobalClass;
 import com.squareup.picasso.Picasso;
 
 public class SelectedImage extends AppCompatActivity {

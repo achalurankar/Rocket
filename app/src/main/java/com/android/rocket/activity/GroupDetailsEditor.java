@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.rocket.util.GlobalClass;
+import com.android.rocket.util.Session;
 import com.android.rocket.modal.GroupInfo;
 import com.android.rocket.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -125,7 +125,7 @@ public class GroupDetailsEditor extends AppCompatActivity {
                                 String GroupNameStr = GroupName.getText().toString().trim();
                                 GroupInfo groupInfo = new GroupInfo("" + Id, "" + GroupNameStr, "" + PicUrl);
                                 FirebaseFirestore.getInstance().collection("groups").document(Id).set(groupInfo);
-                                FirebaseFirestore.getInstance().collection("users/" + GlobalClass.LoggedInUser.getId() + "/groups").document(Id).set(groupInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getId() + "/groups").document(Id).set(groupInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         finish();

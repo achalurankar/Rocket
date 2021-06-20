@@ -28,7 +28,7 @@ import com.android.rocket.util.Constants;
 import com.android.rocket.util.CustomNotification;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.MessageDispatcher;
-import com.android.rocket.util.GlobalClass;
+import com.android.rocket.util.Session;
 import com.android.rocket.modal.Message;
 import com.android.rocket.R;
 import com.android.rocket.util.TypingStatusDispatcher;
@@ -93,9 +93,9 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
-        if (GlobalClass.mSelectedUser == null)
+        if (Session.mSelectedUser == null)
             finish();
-        ReceiverId = GlobalClass.mSelectedUser.getId();
+        ReceiverId = Session.mSelectedUser.getId();
         preferences = getSharedPreferences("scutiPreferences", Context.MODE_PRIVATE);
         mRecyclerView = findViewById(R.id.recycler_view);
         customNotification = Client.getClient("https://fcm.googleapis.com/").create(CustomNotification.class);
@@ -154,7 +154,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
         //update app current state for notification generation
-        preferences.edit().putString("currentlyOpenedRecipient", GlobalClass.mSelectedUser.getId()).apply();
+        preferences.edit().putString("currentlyOpenedRecipient", Session.mSelectedUser.getId()).apply();
 
         findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +166,7 @@ public class MessageActivity extends AppCompatActivity {
         MessageDispatcher.setMessageListener(new MessageDispatcher.MessageListener() {
             @Override
             public void onMessageReceived(Message message) {
-                if(message.getSenderId().equals(GlobalClass.mSelectedUser.getId())) {
+                if(message.getSenderId().equals(Session.mSelectedUser.getId())) {
                     mMessages.add(0, message);
                     setAdapter();
                 }
@@ -199,7 +199,7 @@ public class MessageActivity extends AppCompatActivity {
             public void run() {
                 TypingStatusPacket.setType(Constants.TYPING_STATUS);
                 TypingStatusPacket.setText("online");
-                TypingStatusPacket.setSenderId(GlobalClass.LoggedInUser.getId());
+                TypingStatusPacket.setSenderId(Session.LoggedInUser.getId());
                 OldStatus = "online";
                 sendNotification(TypingStatusPacket);
             }
@@ -220,7 +220,7 @@ public class MessageActivity extends AppCompatActivity {
                     Message message = new Message();
                     message.setType(Constants.TYPING_STATUS);
                     message.setText("typing...");
-                    message.setSenderId(GlobalClass.LoggedInUser.getId());
+                    message.setSenderId(Session.LoggedInUser.getId());
                     sendNotification(message);
                     OldStatus = "typing...";
                 }
@@ -283,7 +283,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void updateRecipientInfo() {
-        Username.setText(GlobalClass.mSelectedUser.getUsername());
+        Username.setText(Session.mSelectedUser.getUsername());
         FirebaseFirestore.getInstance().collection("user_status").document(ReceiverId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
@@ -297,13 +297,13 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
         Picasso.with(this)
-                .load(GlobalClass.mSelectedUser.getPicUrl())
+                .load(Session.mSelectedUser.getPicUrl())
                 .placeholder(R.drawable.user_vector)
                 .into(ProfilePic);
     }
 
     private void getMessages() {
-        FirebaseFirestore.getInstance().collection("chat_logs/" + GlobalClass.LoggedInUser.getId() + "/" + ReceiverId)
+        FirebaseFirestore.getInstance().collection("chat_logs/" + Session.LoggedInUser.getId() + "/" + ReceiverId)
                 .orderBy("messageId", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -358,18 +358,18 @@ public class MessageActivity extends AppCompatActivity {
                     "" + ReplyTo,
                     "" + ReplyToOwner,
                     "" + MessageId,
-                    "" + GlobalClass.LoggedInUser.getName(),
-                    "" + GlobalClass.LoggedInUser.getId(),
+                    "" + Session.LoggedInUser.getName(),
+                    "" + Session.LoggedInUser.getId(),
                     "" + ReceiverId,
                     "" + messageText,
                     "" + Date,
                     "" + Time);
 
-            FirebaseFirestore.getInstance().collection("chat_logs/" + GlobalClass.LoggedInUser.getId() + "/" + ReceiverId)
+            FirebaseFirestore.getInstance().collection("chat_logs/" + Session.LoggedInUser.getId() + "/" + ReceiverId)
                     .document(MessageId)
                     .set(message);
 
-            FirebaseFirestore.getInstance().collection("chat_logs/" + ReceiverId + "/" + GlobalClass.LoggedInUser.getId())
+            FirebaseFirestore.getInstance().collection("chat_logs/" + ReceiverId + "/" + Session.LoggedInUser.getId())
                     .document(MessageId)
                     .set(message);
             sendNotification(message);
@@ -400,18 +400,18 @@ public class MessageActivity extends AppCompatActivity {
                                             "" + ReplyTo,
                                             "" + ReplyToOwner,
                                             "" + MessageId,
-                                            "" + GlobalClass.LoggedInUser.getName(),
-                                            "" + GlobalClass.LoggedInUser.getId(),
+                                            "" + Session.LoggedInUser.getName(),
+                                            "" + Session.LoggedInUser.getId(),
                                             "" + ReceiverId,
                                             "" + text,
                                             "" + Date,
                                             "" + Time);
 
-                                    FirebaseFirestore.getInstance().collection("chat_logs/" + GlobalClass.LoggedInUser.getId() + "/" + ReceiverId)
+                                    FirebaseFirestore.getInstance().collection("chat_logs/" + Session.LoggedInUser.getId() + "/" + ReceiverId)
                                             .document(MessageId)
                                             .set(message);
 
-                                    FirebaseFirestore.getInstance().collection("chat_logs/" + ReceiverId + "/" + GlobalClass.LoggedInUser.getId())
+                                    FirebaseFirestore.getInstance().collection("chat_logs/" + ReceiverId + "/" + Session.LoggedInUser.getId())
                                             .document(MessageId)
                                             .set(message);
                                     Type = "text";
@@ -470,7 +470,7 @@ public class MessageActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final MessageViewHolder holder, final int position) {
             final Message message = list.get(position);
-            if (message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
+            if (message.getSenderId().equals(Session.LoggedInUser.getId())) {
                 //sender or user message section
                 //in sender layout,that is also, user layout, has separate layouts for different type due to alignment right problem
                 holder.ReceiverMsgLayout.setVisibility(View.GONE); // hiding receiver msg layout
@@ -504,10 +504,10 @@ public class MessageActivity extends AppCompatActivity {
                         holder.TypeTextReplySenderMsg.setVisibility(View.VISIBLE);
                         holder.TypeTextReplySenderMsg.setText(message.getText());
                         String text = "";
-                        if (message.getReplyToOwner().equals(GlobalClass.LoggedInUser.getName()))
+                        if (message.getReplyToOwner().equals(Session.LoggedInUser.getName()))
                             text = "You\n";
                         else
-                            text = GlobalClass.mSelectedUser.getName() + "\n";
+                            text = Session.mSelectedUser.getName() + "\n";
                         holder.SenderReplyToText.setText(text + message.getReplyTo());
                         break;
                 }
@@ -538,10 +538,10 @@ public class MessageActivity extends AppCompatActivity {
                     case "reply":
                         holder.ReceiverReplyLayout.setVisibility(View.VISIBLE);
                         String text = "";
-                        if (message.getReplyToOwner().equals(GlobalClass.LoggedInUser.getName()))
+                        if (message.getReplyToOwner().equals(Session.LoggedInUser.getName()))
                             text = "You\n";
                         else
-                            text = GlobalClass.mSelectedUser.getName() + "\n";
+                            text = Session.mSelectedUser.getName() + "\n";
                         holder.ReceiverReplyText.setText(text + message.getReplyTo());
                         break;
                 }
@@ -564,12 +564,12 @@ public class MessageActivity extends AppCompatActivity {
                 public boolean onLongClick(View v) {
                     Type = "reply";
                     String text = "";
-                    if (message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
+                    if (message.getSenderId().equals(Session.LoggedInUser.getId())) {
                         text = "You\n";
-                        ReplyToOwner = GlobalClass.LoggedInUser.getName();
+                        ReplyToOwner = Session.LoggedInUser.getName();
                     } else {
-                        ReplyToOwner = GlobalClass.mSelectedUser.getName();
-                        text = GlobalClass.mSelectedUser.getName() + "\n";
+                        ReplyToOwner = Session.mSelectedUser.getName();
+                        text = Session.mSelectedUser.getName() + "\n";
                     }
                     text = text + message.getText();
                     ReplyTo = message.getText();
@@ -659,6 +659,6 @@ public class MessageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         System.out.println("resumed");
-        preferences.edit().putString("currentlyOpenedRecipient", GlobalClass.mSelectedUser.getId()).apply();
+        preferences.edit().putString("currentlyOpenedRecipient", Session.mSelectedUser.getId()).apply();
     }
 }

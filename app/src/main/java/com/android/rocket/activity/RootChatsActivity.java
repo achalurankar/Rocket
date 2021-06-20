@@ -1,34 +1,27 @@
 package com.android.rocket.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
-
-import com.android.rocket.util.GlobalClass;
-import com.android.rocket.R;
-import com.android.rocket.util.SectionsPagerAdapter;
-import com.android.rocket.modal.User;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import com.android.rocket.R;
+import com.android.rocket.modal.User;
+import com.android.rocket.util.Constants;
+import com.android.rocket.util.SectionsPagerAdapter;
+import com.android.rocket.util.Session;
+import com.google.android.material.tabs.TabLayout;
 
 public class RootChatsActivity extends AppCompatActivity {
 
     RootChatsActivity mInstance = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,23 +31,27 @@ public class RootChatsActivity extends AppCompatActivity {
         TextView Logout;
         CurrentUsername = findViewById(R.id.currentUsername);
         CurrentUsername.setPaintFlags(CurrentUsername.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        CurrentUsername.setText(GlobalClass.LoggedInUser.getUsername());
+        CurrentUsername.setText(Session.LoggedInUser.getUsername());
         Logout = findViewById(R.id.logout);
         Logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DateFormat df = new SimpleDateFormat("h:mm aa dd/MM/yy");
-                Date obj = new Date();
-                System.out.println("Last Online : " + df.format(obj));
-                final Map<String, String> map = new HashMap<>();
-                map.put("status", "" + df.format(obj));
-                FirebaseFirestore.getInstance().collection("user_status")
-                        .document(GlobalClass.LoggedInUser.getId())
-                        .set(map);
-                FirebaseAuth.getInstance().signOut();
+                getSharedPreferences(Constants.ROCKET_PREFERENCES, Context.MODE_PRIVATE)
+                        .edit()
+                        .remove(Constants.USER_INFO_JSON)
+                        .apply();
+//                DateFormat df = new SimpleDateFormat("h:mm aa dd/MM/yy");
+//                Date obj = new Date();
+//                System.out.println("Last Online : " + df.format(obj));
+//                final Map<String, String> map = new HashMap<>();
+//                map.put("status", "" + df.format(obj));
+//                FirebaseFirestore.getInstance().collection("user_status")
+//                        .document(Session.LoggedInUser.getId())
+//                        .set(map);
+//                FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finishAffinity();
-                GlobalClass.LoggedInUser = new User();
+                Session.LoggedInUser = new User();
             }
         });
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());

@@ -5,18 +5,50 @@ package com.android.rocket.modal;
  * */
 
 public class User {
-    String Id, Name, Username, Email,PicUrl;
-
+    String Id, Name, Email,PicUrl;
+    int userId;
+    String username, emailId, picture;
     public User() {
 
+    }
+
+    public User(int userId, String username, String emailId, String picture) {
+        this.userId = userId;
+        this.username = username;
+        this.emailId = emailId;
+        this.picture = picture;
     }
 
     public User(String id, String name, String username, String email, String picUrl) {
         Id = id;
         Name = name;
-        Username = username;
+        this.username = username;
         Email = email;
         PicUrl = picUrl;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public String getPicUrl() {
@@ -36,7 +68,7 @@ public class User {
     }
 
     public String getUsername() {
-        return Username;
+        return username;
     }
 
     public String getEmail() {
@@ -52,7 +84,7 @@ public class User {
     }
 
     public void setUsername(String username) {
-        Username = username;
+        this.username = username;
     }
 
     public void setEmail(String email) {

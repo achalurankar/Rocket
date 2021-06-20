@@ -1,6 +1,8 @@
 package com.android.rocket.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
@@ -13,13 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.rocket.R;
 import com.android.rocket.controller.AppController;
 import com.android.rocket.service.LastSeenUpdater;
-import com.android.rocket.util.GlobalClass;
-import com.android.rocket.util.TokenRefresher;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.android.rocket.util.Constants;
+import com.android.rocket.util.Session;
 
 /**
  * Splash screen activity
@@ -29,6 +26,8 @@ public class SplashScreen extends AppCompatActivity {
     public static final int ANIM_DURATION = 600;
     ImageView Rocket;
     Animation animation;
+
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,44 +41,14 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void checkUser() {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            String Email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-            GlobalClass.LoggedInUser.setEmail(Email);
-            FirebaseFirestore.getInstance().collection("users")
-                    .whereEqualTo("email", Email)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                                GlobalClass.LoggedInUser.setName(documentSnapshot.get("name").toString());
-                                GlobalClass.LoggedInUser.setUsername(documentSnapshot.get("username").toString());
-                                GlobalClass.LoggedInUser.setId(documentSnapshot.get("id").toString());
-                                GlobalClass.LoggedInUser.setEmail(documentSnapshot.get("email").toString());
-                                GlobalClass.LoggedInUser.setPicUrl(documentSnapshot.get("picUrl").toString());
-                                TokenRefresher.updateToken(GlobalClass.LoggedInUser.getId());
-                            }
-                            start();
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    startActivity(new Intent(SplashScreen.this, RootChatsActivity.class));
-                                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                                    finish();
-                                }
-                            }, ANIM_DURATION + 100);
-                        }
-                    });
+        sharedpreferences = getSharedPreferences(Constants.ROCKET_PREFERENCES, Context.MODE_PRIVATE);
+        String responseData = sharedpreferences.getString(Constants.USER_INFO_JSON, null);
+        if (responseData != null && Session.saveUserInfo(responseData)) {
+            startActivity(new Intent(SplashScreen.this, RootChatsActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            finish();
         } else {
-            start();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                    finish();
-                }
-            }, ANIM_DURATION + 100);
+            openLoginActivity();
         }
     }
 
@@ -93,6 +62,17 @@ public class SplashScreen extends AppCompatActivity {
                 startService(foregroundIntent);
             }
         });
+    }
+
+    public void openLoginActivity() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                finish();
+            }
+        }, ANIM_DURATION + 100);
     }
 
     private void start() {

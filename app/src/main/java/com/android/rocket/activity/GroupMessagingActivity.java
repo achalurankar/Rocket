@@ -22,7 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.rocket.util.GlobalClass;
+import com.android.rocket.util.Session;
 import com.android.rocket.modal.Message;
 import com.android.rocket.R;
 import com.android.rocket.modal.User;
@@ -153,7 +153,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     public void getMessages() {
-        FirebaseFirestore.getInstance().collection("groups/" + GlobalClass.mSelectedGroup.getGroupId() + "/messages")
+        FirebaseFirestore.getInstance().collection("groups/" + Session.mSelectedGroup.getGroupId() + "/messages")
                 .orderBy("messageId", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -191,16 +191,16 @@ public class GroupMessagingActivity extends AppCompatActivity {
                 "" + Type,
                 "",
                 "" + MessageId,
-                "" + GlobalClass.mSelectedGroup.getGroupId(),
-                "" + GlobalClass.LoggedInUser.getName(),
-                "" + GlobalClass.LoggedInUser.getId(),
-                "" + GlobalClass.LoggedInUser.getPicUrl(),
+                "" + Session.mSelectedGroup.getGroupId(),
+                "" + Session.LoggedInUser.getName(),
+                "" + Session.LoggedInUser.getId(),
+                "" + Session.LoggedInUser.getPicUrl(),
                 "" + Date,
                 "" + Time,
                 "" + MessageEditor.getText().toString().trim());
 
         if (Type.equals("text")) {
-            FirebaseFirestore.getInstance().collection("groups/" + GlobalClass.mSelectedGroup.getGroupId() + "/messages")
+            FirebaseFirestore.getInstance().collection("groups/" + Session.mSelectedGroup.getGroupId() + "/messages")
                     .document(MessageId)
                     .set(message);
             MessageEditor.setText("");
@@ -220,7 +220,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
                                     String PicUrl = uri.toString();
                                     message.setPicUrl(PicUrl);
-                                    FirebaseFirestore.getInstance().collection("groups/" + GlobalClass.mSelectedGroup.getGroupId() + "/messages")
+                                    FirebaseFirestore.getInstance().collection("groups/" + Session.mSelectedGroup.getGroupId() + "/messages")
                                             .document(MessageId)
                                             .set(message);
                                     Type = "text";
@@ -236,10 +236,10 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     public void updateGroupInfo() {
-        GroupName.setText(GlobalClass.mSelectedGroup.getGroupName());
-        if (GlobalClass.mSelectedGroup.getPicUrl() != null)
+        GroupName.setText(Session.mSelectedGroup.getGroupName());
+        if (Session.mSelectedGroup.getPicUrl() != null)
             Picasso.with(this)
-                    .load(GlobalClass.mSelectedGroup.getPicUrl())
+                    .load(Session.mSelectedGroup.getPicUrl())
                     .placeholder(R.drawable.group_vector)
                     .into(GroupIcon);
     }
@@ -263,7 +263,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         final UserAdapter adapter = new UserAdapter(GroupMessagingActivity.this, users);
         recyclerView.setAdapter(adapter);
-        FirebaseFirestore.getInstance().collection("users/" + GlobalClass.LoggedInUser.getId() + "/friends").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getId() + "/friends").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 users.clear();
@@ -311,7 +311,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull GroupMessageAdapter.GroupMessageViewHolder holder, final int position) {
             Message message = mList.get(position);
-            if (message.getSenderId().equals(GlobalClass.LoggedInUser.getId())) {
+            if (message.getSenderId().equals(Session.LoggedInUser.getId())) {
                 holder.ReceiverMsgLayout.setVisibility(View.GONE);
                 holder.ImageParentLayout.setVisibility(View.GONE);
                 holder.Time.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
@@ -341,7 +341,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
                 if ((position + 1 != mList.size()
                         && !mList.get(position + 1).getSenderId().equals(message.getSenderId()))
                 ||
-                    (position == mList.size() - 1 && !message.getSenderId().equals(GlobalClass.LoggedInUser.getId()))) {
+                    (position == mList.size() - 1 && !message.getSenderId().equals(Session.LoggedInUser.getId()))) {
                     Picasso.with(mContext)
                             .load(message.getSenderPicUrl())
                             .placeholder(R.drawable.user_vector)
@@ -451,10 +451,10 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     private void addUser(String id, final String name) {
-        String groupId = GlobalClass.mSelectedGroup.getGroupId();
+        String groupId = Session.mSelectedGroup.getGroupId();
         FirebaseFirestore.getInstance().collection("users/" + id + "/groups")
                 .document(groupId)
-                .set(GlobalClass.mSelectedGroup)
+                .set(Session.mSelectedGroup)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

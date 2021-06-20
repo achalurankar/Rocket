@@ -1,9 +1,5 @@
 package com.android.rocket.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -16,23 +12,36 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.rocket.util.GlobalClass;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.rocket.R;
 import com.android.rocket.modal.User;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.android.rocket.util.Client;
+import com.android.rocket.util.Constants;
+import com.android.rocket.util.Session;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
- *  Friend requests activity right to home screen
- * */
+ * Friend requests activity right to home screen
+ */
 public class FriendRequestsActivity extends AppCompatActivity {
 
     RequestAdapter mAdapter;
@@ -40,43 +49,64 @@ public class FriendRequestsActivity extends AppCompatActivity {
     List<User> mRequests = new ArrayList<>();
     TextView LeftNavText;
     LinearLayout LeftNavBtn;
+    OkHttpClient mClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_requests);
+        mClient = new OkHttpClient.Builder().build();
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new RequestAdapter(this, mRequests);
         mAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(mAdapter);
-        getRequests();
         setupNavigation();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getRequests();
+    }
+
     private void getRequests() {
-        FirebaseFirestore.getInstance().collection("users/" + GlobalClass.LoggedInUser.getId() + "/requests").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        Request request = new Request.Builder()
+                .url(Constants.host + "/request/" + Session.LoggedInUser.getUserId())
+                .build();
+        mClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                mRequests.clear();
-                for (DocumentSnapshot snapshot : queryDocumentSnapshots.getDocuments()) {
-                    String requestID = snapshot.get("id").toString();
-                    FirebaseFirestore.getInstance().collection("users").whereEqualTo("id", requestID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (DocumentSnapshot snapshot : queryDocumentSnapshots.getDocuments()) {
-                                User user = new User();
-                                user.setId(snapshot.get("id").toString());
-                                user.setName(snapshot.get("name").toString());
-                                user.setEmail(snapshot.get("email").toString());
-                                user.setUsername(snapshot.get("username").toString());
-                                user.setPicUrl(snapshot.get("picUrl").toString());
-                                mRequests.add(user);
-                            }
-                            mAdapter.notifyDataSetChanged();
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String responseData = response.body().string();
+                    try {
+                        JSONArray array = new JSONArray(responseData);
+                        int length = array.length();
+                        mRequests.clear();
+                        for (int i = 0; i < length; i++) {
+                            JSONObject jsonObject = (JSONObject) array.get(i);
+                            User user = new User(
+                                    jsonObject.getInt("userId"),
+                                    jsonObject.getString("username"),
+                                    jsonObject.getString("emailId"),
+                                    jsonObject.getString("picture"));
+                            mRequests.add(user);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            });
                         }
-                    });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -100,26 +130,24 @@ public class FriendRequestsActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ImageViewHolder holder, final int position) {
 
-            User user = mRequests.get(position);
-            holder.Name.setText(user.getName());
-            holder.Username.setText(user.getUsername());
+            final User user = mRequests.get(position);
+            holder.Name.setText(user.getUsername());
+            holder.Username.setText(user.getEmail());
             holder.Accept.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String id = mRequests.get(position).getId();
-                    acceptRequest(id);
+                    respondToRequest(user, true);
                 }
             });
 
             holder.Reject.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String id = mRequests.get(position).getId();
-                    rejectRequest(id);
+                    respondToRequest(user, false);
                 }
             });
             Picasso.with(FriendRequestsActivity.this)
-                    .load(user.getPicUrl())
+                    .load(user.getPicture())
                     .placeholder(R.drawable.user_vector)
                     .into(holder.Icon);
         }
@@ -148,37 +176,53 @@ public class FriendRequestsActivity extends AppCompatActivity {
 
     }
 
-    private void acceptRequest(final String senderId) {
-        final String currentUserID = GlobalClass.LoggedInUser.getId();
-        FirebaseFirestore.getInstance().collection("users/" + currentUserID + "/requests")
-                .document(senderId)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Map<String, String> sender = new HashMap<>(), currentUser = new HashMap<>();
-                        sender.put("id", senderId);
-                        currentUser.put("id", currentUserID);
-                        FirebaseFirestore.getInstance().collection("users/" + currentUserID + "/friends").document(senderId).set(sender);
-                        FirebaseFirestore.getInstance().collection("users/" + senderId + "/friends").document(currentUserID).set(currentUser);
-                        Toast.makeText(FriendRequestsActivity.this, "request accepted", Toast.LENGTH_SHORT).show();
-                        getRequests();
-                    }
-                });
-    }
+    private void respondToRequest(User friend, boolean accepted) {
+        JSONObject wrapper = new JSONObject();
+        try {
+            wrapper.put("userId", Session.LoggedInUser.getUserId());
+            wrapper.put("friendId", friend.getUserId());
+            wrapper.put("accepted", accepted);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-    private void rejectRequest(String senderId) {
-        final String currentUserID = GlobalClass.LoggedInUser.getId();
-        FirebaseFirestore.getInstance().collection("users/" + currentUserID + "/requests")
-                .document(senderId)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(FriendRequestsActivity.this, "request rejected", Toast.LENGTH_SHORT).show();
-                        getRequests();
-                    }
-                });
+        RequestBody requestBody = RequestBody.create(Client.JSON, String.valueOf(wrapper));
+        Request request = new Request.Builder()
+                .method("POST", requestBody)
+                .url(Constants.host + "/request/respond")
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        mClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String message = "";
+                            if (response.code() == 200) {
+                                message = "User added";
+                            }else {
+                                message = "Cannot add this user!";
+                            }
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void setupNavigation() {

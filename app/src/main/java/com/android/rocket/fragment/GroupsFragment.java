@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.rocket.util.GlobalClass;
+import com.android.rocket.util.Session;
 import com.android.rocket.R;
 import com.android.rocket.activity.GroupDetailsEditor;
 import com.android.rocket.activity.GroupMessagingActivity;
@@ -61,7 +61,7 @@ public class GroupsFragment extends Fragment {
     }
 
     public void updateGroups() {
-        FirebaseFirestore.getInstance().collection("users/" + GlobalClass.LoggedInUser.getId() + "/groups").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getId() + "/groups").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 mAdapter.clear();
@@ -113,7 +113,7 @@ public class GroupsFragment extends Fragment {
             holder.Item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GlobalClass.mSelectedGroup = list.get(position);
+                    Session.mSelectedGroup = list.get(position);
                     startActivity(new Intent(getActivity(), GroupMessagingActivity.class));
                 }
             });

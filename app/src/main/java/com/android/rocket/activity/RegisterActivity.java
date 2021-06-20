@@ -1,11 +1,13 @@
 package com.android.rocket.activity;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,41 +19,54 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.android.rocket.R;
-import com.android.rocket.modal.User;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.android.rocket.util.Client;
+import com.android.rocket.util.Constants;
+import com.android.rocket.util.FileUtil;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Registration activity
  * */
 public class RegisterActivity extends AppCompatActivity {
 
+    private static final String TAG = "RegisterActivity";
     EditText mFullNameET, mEmailET, mUsernameET, mPasswordET, mConfirmPasswordET;
     Button mNextBtn;
     Button mRegisterBtn;
     TextView mLoginTV;
     TextView ResponseMsg;
+
+    //user info variables
     String Name;
     String Username;
     String Email;
     String Password;
+    String Picture;
     Uri mImageUri;
     ProgressBar mProgressBar;
     RadioButton FirstRB, SecondRB, ThirdRB;
@@ -83,6 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
         FirstRB.setClickable(false);
         SecondRB.setClickable(false);
         ThirdRB.setClickable(false);
+        mProgressBar.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
         UserInfoLayout = findViewById(R.id.user_information_layout);
         RegistrationResponseLayout = findViewById(R.id.RegistrationResponseLayout);
         UserPicLayout = findViewById(R.id.user_profile_pic_layout);
@@ -90,12 +106,18 @@ public class RegisterActivity extends AppCompatActivity {
         Done = findViewById(R.id.done);
         ProfilePic = findViewById(R.id.ProfilePic);
 
+        //test
+        mUsernameET.setText("turntables");
+        mPasswordET.setText("turntables");
+        mConfirmPasswordET.setText("turntables");
+        mEmailET.setText("turntables@mail.com");
+
         mNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if ((mPasswordET.getText().toString().trim().equals(mConfirmPasswordET.getText().toString().trim())
                         && !mEmailET.getText().toString().trim().equals("")
-                        && !mFullNameET.getText().toString().trim().equals("")
+//                        && !mFullNameET.getText().toString().trim().equals("")
                         && !mUsernameET.getText().toString().trim().equals("")
                         && mPasswordET.getText().toString().trim().length() >= 6)) {
                     UserInfoLayout.setVisibility(View.GONE);
@@ -109,8 +131,8 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(RegisterActivity.this, "Password did not match", Toast.LENGTH_SHORT).show();
                     if (mEmailET.getText().toString().trim().equals(""))
                         Toast.makeText(RegisterActivity.this, "Email Required", Toast.LENGTH_SHORT).show();
-                    if (mFullNameET.getText().toString().trim().equals(""))
-                        Toast.makeText(RegisterActivity.this, "Full Name Required", Toast.LENGTH_SHORT).show();
+//                    if (mFullNameET.getText().toString().trim().equals(""))
+//                        Toast.makeText(RegisterActivity.this, "Full Name Required", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -128,9 +150,16 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mImageUri != null) {
+                    //user info variables
+                    Name = mFullNameET.getText().toString().trim();
+                    Email = mEmailET.getText().toString().trim();
+                    Password = mPasswordET.getText().toString().trim();
+                    Username = mUsernameET.getText().toString().trim().toLowerCase();
+
                     UserPicLayout.setVisibility(View.GONE);
                     RegistrationResponseLayout.setVisibility(View.VISIBLE);
-                    checkUser();
+//                    checkUser();
+                    registerUser();
                 } else {
                     Toast.makeText(RegisterActivity.this, "No Image Selected", Toast.LENGTH_SHORT).show();
                 }
@@ -146,12 +175,9 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    @Deprecated
     private void checkUser() {
         ResponseMsg.setText("Checking username availability...");
-        Name = mFullNameET.getText().toString().trim();
-        Email = mEmailET.getText().toString().trim();
-        Password = mPasswordET.getText().toString().trim();
-        Username = mUsernameET.getText().toString().trim().toLowerCase();
         FirebaseFirestore.getInstance().collection("users")
                 .whereEqualTo("username", Username)
                 .get()
@@ -180,62 +206,70 @@ public class RegisterActivity extends AppCompatActivity {
         System.out.println("Registration");
         final String Id = System.currentTimeMillis() + "";
         ResponseMsg.setText("Registering your info...");
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(Email, Password)
-                .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull final Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            ResponseMsg.setText("Uploading your profile picture...");
-                            FirebaseStorage.getInstance().getReference("profile_pictures/")
-                                    .child(Username).putFile(mImageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    ResponseMsg.setText("Profile picture uploaded...");
-                                    taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            ResponseMsg.setText("Finishing registration...");
-                                            User user = new User(Id, Name, Username, Email, uri.toString());
-                                            FirebaseFirestore.getInstance().collection("users")
-                                                    .document("" + Id)
-                                                    .set(user)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            System.out.println("Registration Done");
-                                                            ResponseMsg.setText("Registration successful");
-                                                            Drawable drawable = Done.getDrawable();
-                                                            mProgressBar.setProgress(100);
-                                                            ThirdRB.setChecked(true);
-                                                            if (drawable instanceof AnimatedVectorDrawableCompat) {
-                                                                animatedVectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
-                                                                animatedVectorDrawableCompat.start();
-                                                            } else if (drawable instanceof AnimatedVectorDrawable) {
-                                                                animatedVectorDrawable = (AnimatedVectorDrawable) drawable;
-                                                                animatedVectorDrawable.start();
-                                                            }
-                                                            new Handler().postDelayed(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                                                                    finish();
-                                                                }
-                                                            }, 2000);
-                                                        }
-                                                    });
-                                        }
-                                    });
+        try{
+            Picture = FileUtil.getBase64FromUri(mImageUri);
+        } catch (IOException e) {
+            Picture = null;
+        }
+
+        OkHttpClient client = new OkHttpClient.Builder().build();
+
+        JSONObject wrapper = new JSONObject();
+        try{
+            wrapper.put("username", Username);
+            wrapper.put("password", Password);
+            wrapper.put("emailId", Email);
+            wrapper.put("picture", Picture);
+        } catch (JSONException e){
+            wrapper = null;
+            System.out.println("Wrapper Null");
+        }
+        RequestBody requestBody = RequestBody.create(Client.JSON, String.valueOf(wrapper));
+        Request request = new Request.Builder()
+                .method("POST", requestBody)
+                .url(Constants.host + "/register")
+                .addHeader("Content-Type", "application/json")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.e(TAG, "registerUser onFailure: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                if(response.isSuccessful()){
+                    final String responseData = response.body().string();
+                    RegisterActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(RegisterActivity.this, "" + responseData, Toast.LENGTH_SHORT).show();
+                            if(responseData.toLowerCase().contains("succ")){
+                                System.out.println("Registration Done");
+                                ResponseMsg.setText("Registration successful");
+                                Drawable drawable = Done.getDrawable();
+                                mProgressBar.setProgress(100);
+                                ThirdRB.setChecked(true);
+                                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                                    animatedVectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
+                                    animatedVectorDrawableCompat.start();
+                                } else if (drawable instanceof AnimatedVectorDrawable) {
+                                    animatedVectorDrawable = (AnimatedVectorDrawable) drawable;
+                                    animatedVectorDrawable.start();
                                 }
-                            });
-                        } else {
-                            UserInfoLayout.setVisibility(View.VISIBLE);
-                            ResponseMsg.setVisibility(View.GONE);
-                            UserPicLayout.setVisibility(View.GONE);
-                            ResponseMsg.setText("");
-                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                                        finish();
+                                    }
+                                }, 2000);
+                            }
                         }
-                    }
-                });
+                    });
+                }
+            }
+        });
     }
 
     @Override

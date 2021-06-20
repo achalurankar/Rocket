@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1B0311"
+    android:background="@color/dark_background"
     tools:context=".activity.AddFriendsActivity">
 
     <RelativeLayout
@@ -59,39 +59,19 @@
         android:paddingEnd="15dp"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:layout_above="@id/add_btn"
+        android:layout_below="@id/header_layout"
         android:background="@drawable/search_bar"
-        android:textColor="@color/rich_black"
+        android:textColor="@color/darker_grey"
         android:inputType="text"
         android:fontFamily="@font/boogaloo"
-        android:hint="Enter username..."
-        android:textColorHint="@color/darker_grey"
+        android:hint="Enter username to search..."
+        android:textColorHint="@color/colorPrimary"
         android:textSize="17sp"/>
 
-    <Button
-        android:id="@+id/add_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/friends_icon"
-        android:background="@drawable/add_btn_drawable"
-        android:paddingTop="10dp"
-        android:textColor="@color/dark_background"
-        android:text="ADD"
-        android:alpha="0.45"
-        android:textSize="18sp"
-        android:fontFamily="@font/boogaloo"
-        android:paddingBottom="10dp"/>
-
-    <ImageView
-        android:id="@+id/friends_icon"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_margin="5dp"
-        android:focusable="false"
-        android:layout_centerInParent="true"
-        android:src="@drawable/friends_icon_neon"/>
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/SearchBarET"
+        android:layout_margin="5dp"/>
 </RelativeLayout>

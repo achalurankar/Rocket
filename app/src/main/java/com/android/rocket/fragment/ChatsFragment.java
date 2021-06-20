@@ -3,6 +3,7 @@ package com.android.rocket.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.rocket.util.GlobalClass;
+import com.android.rocket.util.Constants;
+import com.android.rocket.util.FileUtil;
+import com.android.rocket.util.Session;
 import com.android.rocket.R;
 import com.android.rocket.activity.MessageActivity;
 import com.android.rocket.modal.User;
@@ -24,16 +27,31 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class ChatsFragment extends Fragment {
 
     RecyclerView mRecyclerView;
     ChatsAdapter mAdapter;
     List<User> mChats = new ArrayList<>();
+    public static final String TAG = "ChatsFragment";
 
     @Nullable
     @Override
@@ -44,33 +62,54 @@ public class ChatsFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new ChatsAdapter(getActivity(), mChats);
         mRecyclerView.setAdapter(mAdapter);
-        updateChats();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateChats();
     }
 
     //method to update chats
     private void updateChats() {
-        FirebaseFirestore.getInstance().collection("users/" + GlobalClass.LoggedInUser.getId() + "/friends").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+        OkHttpClient client = new OkHttpClient.Builder().build();
+        Request request = new Request.Builder()
+                .url(Constants.host + "/friends/" + Session.LoggedInUser.getUserId())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                mChats.clear();
-                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                    FirebaseFirestore.getInstance().collection("users")
-                            .document(documentSnapshot.get("id").toString()).get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Log.e(TAG, "onFailure: updateChats() exception message :" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if(response.isSuccessful()){
+                    final String responseData = response.body().string();
+                    try{
+                        JSONArray array = new JSONArray(responseData);
+                        int length = array.length();
+                        mChats.clear();
+                        for (int i = 0; i < length; i++) {
+                            JSONObject jsonObject = (JSONObject) array.get(i);
+                            User user = new User(
+                                    jsonObject.getInt("userId"),
+                                    jsonObject.getString("username"),
+                                    jsonObject.getString("emailId"),
+                                    jsonObject.getString("picture"));
+                            mChats.add(user);
+                            getActivity().runOnUiThread(new Runnable() {
                                 @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    User user = new User();
-                                    System.out.println("Into User");
-                                    user.setId(documentSnapshot.get("id").toString());
-                                    user.setName(documentSnapshot.get("name").toString());
-                                    user.setUsername(documentSnapshot.get("username").toString());
-                                    user.setEmail(documentSnapshot.get("email").toString());
-                                    user.setPicUrl(documentSnapshot.get("picUrl").toString());
-                                    mChats.add(user);
+                                public void run() {
                                     mAdapter.notifyDataSetChanged();
                                 }
                             });
+                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -96,19 +135,20 @@ public class ChatsFragment extends Fragment {
         public void onBindViewHolder(ChatsAdapter.ChatsViewHolder holder, final int position) {
 
             User user = list.get(position);
-            String from = user.getName() + " (@ " + user.getUsername() + ")";
+            String from = user.getUsername();
             holder.From.setText(from);
             holder.MessageSubject.setText("Start new chat");
             holder.Item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    GlobalClass.mSelectedUser = list.get(position);
+                    Session.mSelectedUser = list.get(position);
                     startActivity(new Intent(getActivity(), MessageActivity.class));
                 }
             });
 
+            File picture = FileUtil.getFileFromBase64(mContext, user.getPicture());
             Picasso.with(getActivity())
-                    .load(user.getPicUrl())
+                    .load(picture == null ? "no image" : picture.getPath())
                     .placeholder(R.drawable.user_vector)
                     .into(holder.Icon);
         }
