@@ -21,19 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.rocket.R;
 import com.android.rocket.modal.Message;
-import com.android.rocket.modal.Packet;
-import com.android.rocket.modal.ResponseBody;
-import com.android.rocket.modal.User;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.CustomNotification;
-import com.android.rocket.util.MessageDispatcher;
 import com.android.rocket.util.Session;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -50,9 +41,6 @@ import java.util.List;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Messaging activity, opens after selecting one added friends from chat activity
@@ -75,6 +63,8 @@ public class MessageActivity extends AppCompatActivity {
     TextView UserStatus;
     TextView ReplyPreviewText;
     String Type = "text";
+    String ReplyOwner = "no-val";
+    String ReplyText = "no-val";
     Uri mImageUri;
     RelativeLayout ReplyPreviewLayout;
 
@@ -228,6 +218,8 @@ public class MessageActivity extends AppCompatActivity {
                                     jsonObject.getString("text"),
                                     jsonObject.getString("type"),
                                     jsonObject.getBoolean("seen"),
+                                    jsonObject.getString("replyText"),
+                                    jsonObject.getString("replyOwner"),
                                     jsonObject.getString("dateSent"),
                                     jsonObject.getString("dateUpdated"));
                             mMessages.add(message);
@@ -254,9 +246,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendMessage() {
         String messageText = MessageEditor.getText().toString().trim();
-        if (Type.equals("text")
-//                || Type.equals("reply")
-        ) {
+        if (Type.equals("text") || Type.equals("reply")) {
             Message message = new Message();
             JSONObject wrapper = new JSONObject();
             try {
@@ -265,6 +255,8 @@ public class MessageActivity extends AppCompatActivity {
                 wrapper.put("picture", "no-pic");
                 wrapper.put("text", messageText);
                 wrapper.put("type", Type);
+                wrapper.put("replyText", ReplyText);
+                wrapper.put("replyOwner", ReplyOwner);
             } catch (JSONException e) {
                 wrapper = null;
                 e.printStackTrace();
@@ -301,7 +293,6 @@ public class MessageActivity extends AppCompatActivity {
             SendBtn.setAlpha(0.4f);
             SelectedImage.setVisibility(View.GONE);
             CloseBtn.setVisibility(View.GONE);
-//            String PicUrl = uri.toString();
             String text = "" + MessageEditor.getText().toString().trim();
             if (text.equals(""))
                 text = "photo";
@@ -317,6 +308,8 @@ public class MessageActivity extends AppCompatActivity {
         }
         ReplyPreviewLayout.setVisibility(View.GONE);
         Type = "text";
+        ReplyOwner = "no-val";
+        ReplyText = "no-val";
     }
 
     public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
@@ -367,15 +360,15 @@ public class MessageActivity extends AppCompatActivity {
                         });
                         break;
                     case "reply":
-//                        holder.SenderReplyToText.setVisibility(View.VISIBLE);
-//                        holder.TypeTextReplySenderMsg.setVisibility(View.VISIBLE);
-//                        holder.TypeTextReplySenderMsg.setText(message.getText());
-//                        String text = "";
-//                        if (message.getReplyToOwner().equals(Session.LoggedInUser.getName()))
-//                            text = "You\n";
-//                        else
-//                            text = Session.mSelectedUser.getName() + "\n";
-//                        holder.SenderReplyToText.setText(text + message.getReplyTo());
+                        holder.SenderReplyToText.setVisibility(View.VISIBLE);
+                        holder.TypeTextReplySenderMsg.setVisibility(View.VISIBLE);
+                        holder.TypeTextReplySenderMsg.setText(message.getText());
+                        String text = "";
+                        if (message.getReplyOwner().equals(Session.LoggedInUser.getUsername()))
+                            text = "You\n";
+                        else
+                            text = Session.SelectedUser.getUsername() + "\n";
+                        holder.SenderReplyToText.setText(text + message.getReplyText());
                         break;
                 }
             } else {
@@ -403,14 +396,14 @@ public class MessageActivity extends AppCompatActivity {
                         });
                         break;
                     case "reply":
-//                        holder.ReceiverReplyLayout.setVisibility(View.VISIBLE);
-//                        String text = "";
-//                        if (message.getReplyToOwner().equals(Session.LoggedInUser.getName()))
-//                            text = "You\n";
-//                        else
-//                            text = Session.mSelectedUser.getName() + "\n";
-//                        holder.ReceiverReplyText.setText(text + message.getReplyTo());
-//                        break;
+                        holder.ReceiverReplyLayout.setVisibility(View.VISIBLE);
+                        String text = "";
+                        if (message.getReplyOwner().equals(Session.LoggedInUser.getUsername()))
+                            text = "You\n";
+                        else
+                            text = Session.SelectedUser.getUsername() + "\n";
+                        holder.ReceiverReplyText.setText(text + message.getReplyText());
+                        break;
                 }
                 holder.ReceiverMsg.setText(message.getText());
             }
@@ -429,19 +422,19 @@ public class MessageActivity extends AppCompatActivity {
             holder.Item.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-//                    Type = "reply";
-//                    String text = "";
-//                    if (message.getSenderId().equals(Session.LoggedInUser.getId())) {
-//                        text = "You\n";
-//                        ReplyToOwner = Session.LoggedInUser.getName();
-//                    } else {
-//                        ReplyToOwner = Session.mSelectedUser.getName();
-//                        text = Session.mSelectedUser.getName() + "\n";
-//                    }
-//                    text = text + message.getText();
-//                    ReplyTo = message.getText();
-//                    ReplyPreviewLayout.setVisibility(View.VISIBLE);
-//                    ReplyPreviewText.setText(text);
+                    Type = "reply";
+                    String text = "";
+                    if (message.getSenderId() == Session.LoggedInUser.getUserId()) {
+                        text = "You\n";
+                        ReplyOwner = Session.LoggedInUser.getUsername();
+                    } else {
+                        ReplyOwner = Session.SelectedUser.getUsername();
+                        text = Session.SelectedUser.getUsername() + "\n";
+                    }
+                    text = text + message.getText();
+                    ReplyText = message.getText();
+                    ReplyPreviewLayout.setVisibility(View.VISIBLE);
+                    ReplyPreviewText.setText(text);
                     return true;
                 }
             });
@@ -501,31 +494,5 @@ public class MessageActivity extends AppCompatActivity {
                 Seen = itemView.findViewById(R.id.seen);
             }
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        System.out.println("destroyed");
-        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        System.out.println("paused");
-        preferences.edit().putString("currentlyOpenedRecipient", "0").apply();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        System.out.println("resumed");
-        preferences.edit().putString("currentlyOpenedRecipient", Session.SelectedUser.getId()).apply();
     }
 }

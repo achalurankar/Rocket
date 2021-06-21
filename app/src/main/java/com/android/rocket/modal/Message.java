@@ -14,6 +14,8 @@ public class Message {
     public String text;
     public String type;
     public boolean seen;
+    public String replyText;
+    public String replyOwner;
     public String dateSent;
     public String dateUpdated;
 
@@ -21,7 +23,7 @@ public class Message {
 //        empty constructor
     }
 
-    public Message(String messageId, String conversationId, int senderId, int receiverId, String picture, String text, String type, boolean seen, String dateSent, String dateUpdated) {
+    public Message(String messageId, String conversationId, int senderId, int receiverId, String picture, String text, String type, boolean seen, String replyText, String replyOwner, String dateSent, String dateUpdated) {
         this.messageId = messageId;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -30,6 +32,8 @@ public class Message {
         this.text = text;
         this.type = type;
         this.seen = seen;
+        this.replyText = replyText;
+        this.replyOwner = replyOwner;
         this.dateSent = dateSent;
         this.dateUpdated = dateUpdated;
     }
@@ -96,6 +100,22 @@ public class Message {
 
     public void setSeen(boolean seen) {
         this.seen = seen;
+    }
+
+    public String getReplyText() {
+        return replyText;
+    }
+
+    public void setReplyText(String replyText) {
+        this.replyText = replyText;
+    }
+
+    public String getReplyOwner() {
+        return replyOwner;
+    }
+
+    public void setReplyOwner(String replyOwner) {
+        this.replyOwner = replyOwner;
     }
 
     public String getDateSent() {
