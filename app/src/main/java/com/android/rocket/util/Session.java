@@ -9,8 +9,8 @@ import org.json.JSONObject;
 public class Session {
 
     public static User LoggedInUser = new User();
-    public static User mSelectedUser;
-    public static GroupInfo mSelectedGroup;
+    public static User SelectedUser;
+    public static GroupInfo SelectedGroup;
 
     public static boolean saveUserInfo(String responseData){
         boolean result = true;

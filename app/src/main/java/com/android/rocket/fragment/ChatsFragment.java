@@ -23,11 +23,6 @@ import com.android.rocket.util.Session;
 import com.android.rocket.R;
 import com.android.rocket.activity.MessageActivity;
 import com.android.rocket.modal.User;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -141,12 +136,13 @@ public class ChatsFragment extends Fragment {
             holder.Item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Session.mSelectedUser = list.get(position);
+                    Session.SelectedUser = list.get(position);
                     startActivity(new Intent(getActivity(), MessageActivity.class));
                 }
             });
 
-            File picture = FileUtil.getFileFromBase64(mContext, user.getPicture());
+//            File picture = FileUtil.getFileFromBase64(mContext, user.getPicture());
+            File picture = null;
             Picasso.with(getActivity())
                     .load(picture == null ? "no image" : picture.getPath())
                     .placeholder(R.drawable.user_vector)

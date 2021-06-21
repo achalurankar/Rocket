@@ -153,7 +153,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     public void getMessages() {
-        FirebaseFirestore.getInstance().collection("groups/" + Session.mSelectedGroup.getGroupId() + "/messages")
+        FirebaseFirestore.getInstance().collection("groups/" + Session.SelectedGroup.getGroupId() + "/messages")
                 .orderBy("messageId", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -161,15 +161,15 @@ public class GroupMessagingActivity extends AppCompatActivity {
                         mMessages.clear();
                         for (DocumentSnapshot documentSnapshot : value.getDocuments()) {
                             Message message = new Message();
-                            message.setMessageId(documentSnapshot.get("messageId").toString());
-                            message.setSenderName(documentSnapshot.get("senderName").toString());
-                            message.setSenderId(documentSnapshot.get("senderId").toString());
-                            message.setSenderPicUrl(documentSnapshot.get("senderPicUrl").toString());
-                            message.setPicUrl(documentSnapshot.get("picUrl").toString());
-                            message.setText(documentSnapshot.get("text").toString());
-                            message.setType(documentSnapshot.get("type").toString());
-                            message.setDate(documentSnapshot.get("date").toString());
-                            message.setTime(documentSnapshot.get("time").toString());
+//                            message.setMessageId(documentSnapshot.get("messageId").toString());
+//                            message.setSenderName(documentSnapshot.get("senderName").toString());
+//                            message.setSenderId(documentSnapshot.get("senderId").toString());
+//                            message.setSenderPicUrl(documentSnapshot.get("senderPicUrl").toString());
+//                            message.setPicUrl(documentSnapshot.get("picUrl").toString());
+//                            message.setText(documentSnapshot.get("text").toString());
+//                            message.setType(documentSnapshot.get("type").toString());
+//                            message.setDate(documentSnapshot.get("date").toString());
+//                            message.setTime(documentSnapshot.get("time").toString());
                             mMessages.add(message);
                         }
                         mAdapter = new GroupMessageAdapter(GroupMessagingActivity.this, mMessages);
@@ -188,19 +188,20 @@ public class GroupMessagingActivity extends AppCompatActivity {
         date = new Date();
         String Date = "" + df.format(date);
         final Message message = new Message(
-                "" + Type,
-                "",
-                "" + MessageId,
-                "" + Session.mSelectedGroup.getGroupId(),
-                "" + Session.LoggedInUser.getName(),
-                "" + Session.LoggedInUser.getId(),
-                "" + Session.LoggedInUser.getPicUrl(),
-                "" + Date,
-                "" + Time,
-                "" + MessageEditor.getText().toString().trim());
+//                "" + Type,
+//                "",
+//                "" + MessageId,
+//                "" + Session.mSelectedGroup.getGroupId(),
+//                "" + Session.LoggedInUser.getName(),
+//                "" + Session.LoggedInUser.getId(),
+//                "" + Session.LoggedInUser.getPicUrl(),
+//                "" + Date,
+//                "" + Time,
+//                "" + MessageEditor.getText().toString().trim()
+        );
 
         if (Type.equals("text")) {
-            FirebaseFirestore.getInstance().collection("groups/" + Session.mSelectedGroup.getGroupId() + "/messages")
+            FirebaseFirestore.getInstance().collection("groups/" + Session.SelectedGroup.getGroupId() + "/messages")
                     .document(MessageId)
                     .set(message);
             MessageEditor.setText("");
@@ -219,8 +220,8 @@ public class GroupMessagingActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String PicUrl = uri.toString();
-                                    message.setPicUrl(PicUrl);
-                                    FirebaseFirestore.getInstance().collection("groups/" + Session.mSelectedGroup.getGroupId() + "/messages")
+//                                    message.setPicUrl(PicUrl);
+                                    FirebaseFirestore.getInstance().collection("groups/" + Session.SelectedGroup.getGroupId() + "/messages")
                                             .document(MessageId)
                                             .set(message);
                                     Type = "text";
@@ -236,10 +237,10 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     public void updateGroupInfo() {
-        GroupName.setText(Session.mSelectedGroup.getGroupName());
-        if (Session.mSelectedGroup.getPicUrl() != null)
+        GroupName.setText(Session.SelectedGroup.getGroupName());
+        if (Session.SelectedGroup.getPicUrl() != null)
             Picasso.with(this)
-                    .load(Session.mSelectedGroup.getPicUrl())
+                    .load(Session.SelectedGroup.getPicUrl())
                     .placeholder(R.drawable.group_vector)
                     .into(GroupIcon);
     }
@@ -310,51 +311,51 @@ public class GroupMessagingActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull GroupMessageAdapter.GroupMessageViewHolder holder, final int position) {
-            Message message = mList.get(position);
-            if (message.getSenderId().equals(Session.LoggedInUser.getId())) {
-                holder.ReceiverMsgLayout.setVisibility(View.GONE);
-                holder.ImageParentLayout.setVisibility(View.GONE);
-                holder.Time.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
-                if (message.getType().equals("text")) {
-                    holder.SenderMsgLayout.setVisibility(View.GONE);
-                    holder.TypeTextSenderMsg.setText(message.getText());
-                } else {
-                    holder.TypeTextSenderMsg.setVisibility(View.GONE);
-                    Picasso.with(mContext)
-                            .load(message.getPicUrl())
-                            .placeholder(R.drawable.camera_vector)
-                            .into(holder.SenderImage);
-                    holder.SenderMessage.setText(message.getText());
-                }
-            } else {
-                holder.SenderMsgLayout.setVisibility(View.GONE);
-                holder.TypeTextSenderMsg.setVisibility(View.GONE);
-                if (message.getType().equals("text"))
-                    holder.ReceiverImage.setVisibility(View.GONE);
-                else {
-                    Picasso.with(mContext)
-                            .load(message.getPicUrl())
-                            .placeholder(R.drawable.camera_vector)
-                            .into(holder.ReceiverImage);
-                }
-                holder.ReceiverMessage.setText(message.getText());
-                if ((position + 1 != mList.size()
-                        && !mList.get(position + 1).getSenderId().equals(message.getSenderId()))
-                ||
-                    (position == mList.size() - 1 && !message.getSenderId().equals(Session.LoggedInUser.getId()))) {
-                    Picasso.with(mContext)
-                            .load(message.getSenderPicUrl())
-                            .placeholder(R.drawable.user_vector)
-                            .into(holder.ProfilePic);
-                    holder.SenderName.setText(message.getSenderName());
-                } else {
-                    holder.ImageParentLayout.setVisibility(View.INVISIBLE);
-                    holder.SenderName.setVisibility(View.GONE);
-
-                }
-                holder.ReceiverMessage.setText(message.getText());
-            }
-            holder.Time.setText(message.getTime() + " " + message.getDate());
+//            Message message = mList.get(position);
+//            if (message.getSenderId().equals(Session.LoggedInUser.getId())) {
+//                holder.ReceiverMsgLayout.setVisibility(View.GONE);
+//                holder.ImageParentLayout.setVisibility(View.GONE);
+//                holder.Time.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+//                if (message.getType().equals("text")) {
+//                    holder.SenderMsgLayout.setVisibility(View.GONE);
+//                    holder.TypeTextSenderMsg.setText(message.getText());
+//                } else {
+//                    holder.TypeTextSenderMsg.setVisibility(View.GONE);
+//                    Picasso.with(mContext)
+//                            .load(message.getPicUrl())
+//                            .placeholder(R.drawable.camera_vector)
+//                            .into(holder.SenderImage);
+//                    holder.SenderMessage.setText(message.getText());
+//                }
+//            } else {
+//                holder.SenderMsgLayout.setVisibility(View.GONE);
+//                holder.TypeTextSenderMsg.setVisibility(View.GONE);
+//                if (message.getType().equals("text"))
+//                    holder.ReceiverImage.setVisibility(View.GONE);
+//                else {
+//                    Picasso.with(mContext)
+//                            .load(message.getPicUrl())
+//                            .placeholder(R.drawable.camera_vector)
+//                            .into(holder.ReceiverImage);
+//                }
+//                holder.ReceiverMessage.setText(message.getText());
+//                if ((position + 1 != mList.size()
+//                        && !mList.get(position + 1).getSenderId().equals(message.getSenderId()))
+//                ||
+//                    (position == mList.size() - 1 && !message.getSenderId().equals(Session.LoggedInUser.getId()))) {
+//                    Picasso.with(mContext)
+//                            .load(message.getSenderPicUrl())
+//                            .placeholder(R.drawable.user_vector)
+//                            .into(holder.ProfilePic);
+//                    holder.SenderName.setText(message.getSenderName());
+//                } else {
+//                    holder.ImageParentLayout.setVisibility(View.INVISIBLE);
+//                    holder.SenderName.setVisibility(View.GONE);
+//
+//                }
+//                holder.ReceiverMessage.setText(message.getText());
+//            }
+//            holder.Time.setText(message.getTime() + " " + message.getDate());
         }
 
         @Override
@@ -451,10 +452,10 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     private void addUser(String id, final String name) {
-        String groupId = Session.mSelectedGroup.getGroupId();
+        String groupId = Session.SelectedGroup.getGroupId();
         FirebaseFirestore.getInstance().collection("users/" + id + "/groups")
                 .document(groupId)
-                .set(Session.mSelectedGroup)
+                .set(Session.SelectedGroup)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

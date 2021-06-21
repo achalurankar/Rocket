@@ -113,7 +113,7 @@ public class GroupsFragment extends Fragment {
             holder.Item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Session.mSelectedGroup = list.get(position);
+                    Session.SelectedGroup = list.get(position);
                     startActivity(new Intent(getActivity(), GroupMessagingActivity.class));
                 }
             });
