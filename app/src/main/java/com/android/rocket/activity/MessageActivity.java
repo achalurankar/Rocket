@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.rocket.R;
 import com.android.rocket.modal.Message;
+import com.android.rocket.service.MessageListener;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.CustomNotification;
@@ -104,7 +105,6 @@ public class MessageActivity extends AppCompatActivity {
         ReplyPreviewText = findViewById(R.id.reply_preview_text);
         UserStatus = findViewById(R.id.user_status);
         updateRecipientInfo();
-        getMessages();
         SendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,6 +138,8 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Type = "text";
+                ReplyOwner = "no-val";
+                ReplyText = "no-val";
                 ReplyPreviewLayout.setVisibility(View.GONE);
             }
         });
@@ -148,6 +150,8 @@ public class MessageActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        attachMessageListener();
     }
 
     @Override
@@ -189,57 +193,46 @@ public class MessageActivity extends AppCompatActivity {
                 .into(ProfilePic);
     }
 
-    private void getMessages() {
-        final Request request = new Request.Builder()
-                .url(Constants.host + "/message/" + Session.LoggedInUser.getUserId() + "/" + Session.SelectedUser.getUserId())
-                .build();
-        mClient.newCall(request).enqueue(new okhttp3.Callback() {
+    private void attachMessageListener() {
+        MessageListener.listenMessages(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId(), new MessageListener.Listener() {
             @Override
-            public void onFailure(@NotNull okhttp3.Call call, @NotNull IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(@NotNull okhttp3.Call call, @NotNull okhttp3.Response response) throws IOException {
-                if(response.isSuccessful()){
-                    final String responseData = response.body().string();
-                    try {
-                        JSONArray array = new JSONArray(responseData);
-                        int length = array.length();
-                        mMessages.clear();
-                        for (int i = 0; i < length; i++) {
-                            JSONObject jsonObject = (JSONObject) array.get(i);
-                            Message message = new Message(
-                                    jsonObject.getString("messageId"),
-                                    jsonObject.getString("conversationId"),
-                                    jsonObject.getInt("senderId"),
-                                    jsonObject.getInt("receiverId"),
-                                    jsonObject.getString("picture"),
-                                    jsonObject.getString("text"),
-                                    jsonObject.getString("type"),
-                                    jsonObject.getBoolean("seen"),
-                                    jsonObject.getString("replyText"),
-                                    jsonObject.getString("replyOwner"),
-                                    jsonObject.getString("dateSent"),
-                                    jsonObject.getString("dateUpdated"));
-                            mMessages.add(message);
-                        }
-                        setAdapter();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+            public void onChange(String responseData) {
+                setRecyclerview(responseData);
             }
         });
     }
 
-    private void setAdapter() {
+    private void setRecyclerview(final String responseData) {
         MessageActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mAdapter = new MessageAdapter(MessageActivity.this, mMessages);
-                mAdapter.setHasStableIds(true);
-                mRecyclerView.setAdapter(mAdapter);
+                try {
+                    JSONArray array = new JSONArray(responseData);
+                    int length = array.length();
+                    mMessages.clear();
+                    for (int i = 0; i < length; i++) {
+                        JSONObject jsonObject = (JSONObject) array.get(i);
+                        Message message = new Message(
+                                jsonObject.getString("messageId"),
+                                jsonObject.getString("conversationId"),
+                                jsonObject.getInt("senderId"),
+                                jsonObject.getInt("receiverId"),
+                                jsonObject.getString("picture"),
+                                jsonObject.getString("text"),
+                                jsonObject.getString("type"),
+                                jsonObject.getBoolean("seen"),
+                                jsonObject.getString("replyText"),
+                                jsonObject.getString("replyOwner"),
+                                jsonObject.getString("dateSent"),
+                                jsonObject.getString("dateUpdated"));
+                        mMessages.add(message);
+                    }
+                    mAdapter = new MessageAdapter(MessageActivity.this, mMessages);
+                    mAdapter.setHasStableIds(true);
+                    mRecyclerView.setAdapter(mAdapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -276,7 +269,6 @@ public class MessageActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 MessageEditor.setText("");
-                                getMessages();
                             }
                         });
                     } catch (IOException e) {
@@ -304,7 +296,6 @@ public class MessageActivity extends AppCompatActivity {
             SendBtn.setAlpha(1.0f);
 //            sendNotification(message);
             mMessages.add(0, message);
-            setAdapter();
         }
         ReplyPreviewLayout.setVisibility(View.GONE);
         Type = "text";
