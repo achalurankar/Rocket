@@ -95,7 +95,9 @@ public class FriendRequestsActivity extends AppCompatActivity {
                                     jsonObject.getInt("userId"),
                                     jsonObject.getString("username"),
                                     jsonObject.getString("emailId"),
-                                    jsonObject.getString("picture"));
+                                    jsonObject.getString("picture"),
+                                    jsonObject.getLong("picture_version")
+                            );
                             mRequests.add(user);
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -132,7 +134,7 @@ public class FriendRequestsActivity extends AppCompatActivity {
 
             final User user = mRequests.get(position);
             holder.Name.setText(user.getUsername());
-            holder.Username.setText(user.getEmail());
+            holder.Username.setText(user.getEmailId());
             holder.Accept.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

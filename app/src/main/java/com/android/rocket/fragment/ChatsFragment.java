@@ -93,7 +93,9 @@ public class ChatsFragment extends Fragment {
                                     jsonObject.getInt("userId"),
                                     jsonObject.getString("username"),
                                     jsonObject.getString("emailId"),
-                                    jsonObject.getString("picture"));
+                                    jsonObject.getString("picture"),
+                                    jsonObject.getLong("pictureVersion")
+                            );
                             mChats.add(user);
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
@@ -141,10 +143,9 @@ public class ChatsFragment extends Fragment {
                 }
             });
 
-//            File picture = FileUtil.getFileFromBase64(mContext, user.getPicture());
-            File picture = null;
+            File picture = FileUtil.getImageFileUserData(mContext, user);
             Picasso.with(getActivity())
-                    .load(picture == null ? "no image" : picture.getPath())
+                    .load(picture)
                     .placeholder(R.drawable.user_vector)
                     .into(holder.Icon);
         }

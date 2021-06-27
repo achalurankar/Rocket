@@ -264,7 +264,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         final UserAdapter adapter = new UserAdapter(GroupMessagingActivity.this, users);
         recyclerView.setAdapter(adapter);
-        FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getId() + "/friends").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getUserId() + "/friends").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 users.clear();
@@ -276,11 +276,11 @@ public class GroupMessagingActivity extends AppCompatActivity {
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     User user = new User();
                                     System.out.println("Into User");
-                                    user.setId(documentSnapshot.get("id").toString());
-                                    user.setName(documentSnapshot.get("name").toString());
-                                    user.setUsername(documentSnapshot.get("username").toString());
-                                    user.setEmail(documentSnapshot.get("email").toString());
-                                    user.setPicUrl(documentSnapshot.get("picUrl").toString());
+//                                    user.setId(documentSnapshot.get("id").toString());
+//                                    user.setName(documentSnapshot.get("name").toString());
+//                                    user.setUsername(documentSnapshot.get("username").toString());
+//                                    user.setEmail(documentSnapshot.get("email").toString());
+//                                    user.setPicUrl(documentSnapshot.get("picUrl").toString());
                                     users.add(user);
                                     adapter.notifyDataSetChanged();
                                     loading.setVisibility(View.GONE);
@@ -413,21 +413,21 @@ public class GroupMessagingActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ImageViewHolder holder, final int position) {
 
-            User user = list.get(position);
-            holder.Name.setText(user.getName());
-            holder.Username.setText(user.getUsername());
-            holder.AddFriend.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String id = list.get(position).getId();
-                    String name = list.get(position).getUsername();
-                    addUser(id, name);
-                }
-            });
-            Picasso.with(mContext)
-                    .load(user.getPicUrl())
-                    .placeholder(R.drawable.android_vector)
-                    .into(holder.Icon);
+//            User user = list.get(position);
+//            holder.Name.setText(user.getName());
+//            holder.Username.setText(user.getUsername());
+//            holder.AddFriend.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    String id = list.get(position).getId();
+//                    String name = list.get(position).getUsername();
+//                    addUser(id, name);
+//                }
+//            });
+//            Picasso.with(mContext)
+//                    .load(user.getPicUrl())
+//                    .placeholder(R.drawable.android_vector)
+//                    .into(holder.Icon);
         }
 
         @Override

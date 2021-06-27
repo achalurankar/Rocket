@@ -3,6 +3,7 @@ package com.android.rocket.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
@@ -37,7 +38,29 @@ public class SplashScreen extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         animation = AnimationUtils.loadAnimation(SplashScreen.this, R.anim.rocket_launch);
         setController();
+        setupDatabase();
         checkUser();
+    }
+
+    private void setupDatabase() {
+        Session.DbRef = openOrCreateDatabase("rocket", MODE_PRIVATE, null);
+        //create table user_profile_pictures
+        Session.DbRef.execSQL(String.format("CREATE TABLE IF NOT EXISTS %s(%s int, " +
+                "%s int, " +
+                "%s VARCHAR);",
+                Constants.TABLE_USER_PROFILE_PICTURES,
+                Constants.FIELD_USER_ID,
+                Constants.FIELD_VERSION,
+                Constants.FIELD_FILE_PATH
+        ));
+        //create table chat_logs_pictures
+        Session.DbRef.execSQL(String.format("CREATE TABLE IF NOT EXISTS %s(%s int, " +
+                        "%s VARCHAR);",
+                Constants.TABLE_CHAT_LOGS_PICTURES,
+                Constants.FIELD_MESSAGE_ID,
+                Constants.FIELD_FILE_PATH
+        ));
+        //drop database
     }
 
     private void checkUser() {

@@ -158,7 +158,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                     UserPicLayout.setVisibility(View.GONE);
                     RegistrationResponseLayout.setVisibility(View.VISIBLE);
-//                    checkUser();
                     registerUser();
                 } else {
                     Toast.makeText(RegisterActivity.this, "No Image Selected", Toast.LENGTH_SHORT).show();
@@ -173,33 +172,6 @@ public class RegisterActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    @Deprecated
-    private void checkUser() {
-        ResponseMsg.setText("Checking username availability...");
-        FirebaseFirestore.getInstance().collection("users")
-                .whereEqualTo("username", Username)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        boolean flag = true;
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                            flag = false;
-                        }
-                        if (flag) {
-                            registerUser();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "Username already exists", Toast.LENGTH_SHORT).show();
-                            SecondRB.setChecked(false);
-                            mProgressBar.setProgress(0);
-                            UserInfoLayout.setVisibility(View.VISIBLE);
-                            UserPicLayout.setVisibility(View.GONE);
-                            RegistrationResponseLayout.setVisibility(View.GONE);
-                        }
-                    }
-                });
     }
 
     private void registerUser() {
@@ -220,6 +192,7 @@ public class RegisterActivity extends AppCompatActivity {
             wrapper.put("password", Password);
             wrapper.put("emailId", Email);
             wrapper.put("picture", Picture);
+            wrapper.put("picture_version", System.currentTimeMillis());
         } catch (JSONException e){
             wrapper = null;
             System.out.println("Wrapper Null");

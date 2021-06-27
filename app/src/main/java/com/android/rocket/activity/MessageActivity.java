@@ -25,6 +25,7 @@ import com.android.rocket.service.MessageListener;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.CustomNotification;
+import com.android.rocket.util.FileUtil;
 import com.android.rocket.util.Session;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -35,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +60,6 @@ public class MessageActivity extends AppCompatActivity {
     ImageView CloseBtn;
     ImageView DismissReplyBtn;
     EditText MessageEditor;
-    String ReceiverId;
     String ReceiverToken = "";
     TextView Username;
     TextView UserStatus;
@@ -85,7 +86,6 @@ public class MessageActivity extends AppCompatActivity {
         if (Session.SelectedUser == null)
             finish();
         mClient = new OkHttpClient.Builder().build();
-        ReceiverId = Session.SelectedUser.getId();
         preferences = getSharedPreferences("scutiPreferences", Context.MODE_PRIVATE);
         mRecyclerView = findViewById(R.id.recycler_view);
         customNotification = Client.getClient("https://fcm.googleapis.com/").create(CustomNotification.class);
@@ -187,8 +187,9 @@ public class MessageActivity extends AppCompatActivity {
 
     private void updateRecipientInfo() {
         Username.setText(Session.SelectedUser.getUsername());
+        File picture = FileUtil.getImageFileUserData(this, Session.SelectedUser);
         Picasso.with(this)
-                .load(Session.SelectedUser.getPicture())
+                .load(picture)
                 .placeholder(R.drawable.user_vector)
                 .into(ProfilePic);
     }

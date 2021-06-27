@@ -125,7 +125,7 @@ public class GroupDetailsEditor extends AppCompatActivity {
                                 String GroupNameStr = GroupName.getText().toString().trim();
                                 GroupInfo groupInfo = new GroupInfo("" + Id, "" + GroupNameStr, "" + PicUrl);
                                 FirebaseFirestore.getInstance().collection("groups").document(Id).set(groupInfo);
-                                FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getId() + "/groups").document(Id).set(groupInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getUserId() + "/groups").document(Id).set(groupInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         finish();

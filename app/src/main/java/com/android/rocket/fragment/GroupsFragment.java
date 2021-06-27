@@ -61,24 +61,24 @@ public class GroupsFragment extends Fragment {
     }
 
     public void updateGroups() {
-        FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getId() + "/groups").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                mAdapter.clear();
-                if (value != null) {
-                    for (DocumentSnapshot documentSnapshot : value.getDocuments()) {
-                        GroupInfo group = new GroupInfo();
-                        System.out.println("Into Group");
-                        group.setGroupId(documentSnapshot.get("groupId").toString());
-                        group.setGroupName(documentSnapshot.get("groupName").toString());
-                        group.setPicUrl(documentSnapshot.get("picUrl").toString());
-                        mGroups.add(group);
-                        mAdapter.add(group);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        });
+//        FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getId() + "/groups").addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//                mAdapter.clear();
+//                if (value != null) {
+//                    for (DocumentSnapshot documentSnapshot : value.getDocuments()) {
+//                        GroupInfo group = new GroupInfo();
+//                        System.out.println("Into Group");
+//                        group.setGroupId(documentSnapshot.get("groupId").toString());
+//                        group.setGroupName(documentSnapshot.get("groupName").toString());
+//                        group.setPicUrl(documentSnapshot.get("picUrl").toString());
+//                        mGroups.add(group);
+//                        mAdapter.add(group);
+//                        mAdapter.notifyDataSetChanged();
+//                    }
+//                }
+//            }
+//        });
     }
 
     public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHolder> {

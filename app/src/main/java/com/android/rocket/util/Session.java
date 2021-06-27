@@ -1,5 +1,7 @@
 package com.android.rocket.util;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import com.android.rocket.modal.GroupInfo;
 import com.android.rocket.modal.User;
 
@@ -11,6 +13,7 @@ public class Session {
     public static User LoggedInUser = new User();
     public static User SelectedUser;
     public static GroupInfo SelectedGroup;
+    public static SQLiteDatabase DbRef;
 
     public static boolean saveUserInfo(String responseData){
         boolean result = true;
