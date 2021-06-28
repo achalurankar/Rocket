@@ -142,6 +142,20 @@
                     android:textAlignment="viewEnd"
                     android:textColor="@color/logo_first"
                     android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/seen_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/type_text_reply_sender_msg"
+                    android:text="Seen"
+                    android:visibility="gone"
+                    android:textColor="@color/colorPrimary"
+                    android:fontFamily="@font/boogaloo"
+                    android:textSize="15sp"
+                    android:textAlignment="textEnd"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"/>
             </RelativeLayout>
         </RelativeLayout>
 

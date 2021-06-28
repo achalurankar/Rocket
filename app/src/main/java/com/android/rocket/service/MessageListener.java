@@ -19,13 +19,12 @@ public class MessageListener {
     private static final String TAG = "MessageListener";
     private boolean CONTINUE = true;
 
-    public static MessageListener messageListener;
-
     public interface Listener {
         void onChange(String responseData);
     }
 
     public void stop(){
+        Log.e(TAG, "stop requested");
         this.CONTINUE = false;
     }
 
@@ -34,42 +33,38 @@ public class MessageListener {
             @Override
             public void run() {
                 OkHttpClient mClient = new OkHttpClient.Builder()
-                        .connectTimeout(10, TimeUnit.HOURS)
-                        .writeTimeout(10, TimeUnit.HOURS)
-                        .readTimeout(10, TimeUnit.HOURS)
                         .build();
                 Request request;
                 request = new Request.Builder()
                         .url(Constants.host + "/message/" + userId + "/" + friendId)
                         .build();
-                try {
-                    Response response = mClient.newCall(request).execute();
-                    if(response.isSuccessful()){
-                        String responseData = response.body().string();
-                        listener.onChange(responseData);
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                request = new Request.Builder()
-                        .url(Constants.host + "/message/listener/" + userId + "/" + friendId)
-                        .build();
+                String oldData = null;
                 while (CONTINUE) {
                     try {
                         Log.e(TAG, String.format("run: listening messages for %s/%s", userId, friendId));
                         Response response = mClient.newCall(request).execute();
                         if (response.isSuccessful()) {
-                            //dispatch message
                             String responseData = response.body().string();
-                            listener.onChange(responseData);
-                            Log.e(TAG, String.format("run: message dispatched for %s/%s", userId, friendId));
+                            if(oldData == null){
+                                oldData = responseData;
+                                //dispatch message
+                                listener.onChange(responseData);
+                            } else {
+                                if(!oldData.equals(responseData)){
+                                    //dispatch message
+                                    listener.onChange(responseData);
+                                    Log.e(TAG, String.format("run: message dispatched for %s/%s", userId, friendId));
+                                    oldData = responseData;
+                                }
+
+                            }
                         } else {
                             Log.e(TAG, String.format("run: unsuccessful response for %s/%s", userId, friendId));
                             CONTINUE = false;
                         }
-                    } catch (IOException e) {
-                        if (e instanceof SocketTimeoutException) {
+                        Thread.sleep(1000);
+                    } catch (IOException | InterruptedException e) {
+                        if (e instanceof InterruptedException) {
                         } else {
                             CONTINUE = false;
                             e.printStackTrace();

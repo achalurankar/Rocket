@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ import okhttp3.RequestBody;
  */
 public class MessageActivity extends AppCompatActivity {
 
+    private static final String TAG = "MessageActivity";
     MessageAdapter mAdapter;
     RecyclerView mRecyclerView;
     List<Message> mMessages = new ArrayList<>();
@@ -202,6 +204,37 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onChange(String responseData) {
                 setRecyclerview(responseData);
+//                setSeen(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId());
+            }
+        });
+    }
+
+    private void setSeen(final int userId, final int friendId) {
+        JSONObject wrapper = new JSONObject();
+        try {
+            wrapper.put("userId", userId);
+            wrapper.put("friendId", friendId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(Client.JSON, String.valueOf(wrapper));
+        final Request request = new Request.Builder()
+                .method("POST", requestBody)
+                .url(Constants.host + "/seen")
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        final OkHttpClient client = new OkHttpClient.Builder().build();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -242,7 +275,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        String messageText = MessageEditor.getText().toString().trim();
+        final String messageText = MessageEditor.getText().toString().trim();
         if (Type.equals("text") || Type.equals("reply")) {
             Message message = new Message();
             JSONObject wrapper = new JSONObject();
@@ -414,6 +447,14 @@ public class MessageActivity extends AppCompatActivity {
                 }
             });
 
+            if(position == 0
+                    && message.getSenderId() == Session.LoggedInUser.getUserId()
+                    && message.isSeen()
+            ){
+                Log.e(TAG, "onBindViewHolder: message = " + message.getMessageId());
+//                holder.Seen.setVisibility(View.VISIBLE);
+            }
+
             holder.Item.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -486,7 +527,7 @@ public class MessageActivity extends AppCompatActivity {
                 //common variables initializer
                 Item = itemView.findViewById(R.id.item);
                 Time = itemView.findViewById(R.id.time);
-                Seen = itemView.findViewById(R.id.seen);
+                Seen = itemView.findViewById(R.id.seen_tv);
             }
         }
     }
