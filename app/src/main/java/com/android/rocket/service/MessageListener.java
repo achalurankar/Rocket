@@ -17,19 +17,19 @@ import okhttp3.Response;
 public class MessageListener {
 
     private static final String TAG = "MessageListener";
-    public static boolean CONTINUE = true;
+    private boolean CONTINUE = true;
+
+    public static MessageListener messageListener;
 
     public interface Listener {
         void onChange(String responseData);
     }
 
-    public static MessageListener attachListener(){
-        MessageListener messageListener = new MessageListener();
-
-        return messageListener;
+    public void stop(){
+        this.CONTINUE = false;
     }
 
-    public static void listenMessages(final int userId, final int friendId, final Listener listener) {
+    public void listenMessages(final int userId, final int friendId, final Listener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {

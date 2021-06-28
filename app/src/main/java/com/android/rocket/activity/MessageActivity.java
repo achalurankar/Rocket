@@ -79,6 +79,9 @@ public class MessageActivity extends AppCompatActivity {
 
     public static String mSelectedImageUrl;
 
+    //listeners
+    final MessageListener messageListener = new MessageListener();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,7 +198,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void attachMessageListener() {
-        MessageListener.listenMessages(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId(), new MessageListener.Listener() {
+        messageListener.listenMessages(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId(), new MessageListener.Listener() {
             @Override
             public void onChange(String responseData) {
                 setRecyclerview(responseData);
@@ -486,5 +489,16 @@ public class MessageActivity extends AppCompatActivity {
                 Seen = itemView.findViewById(R.id.seen);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        messageListener.stop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }
