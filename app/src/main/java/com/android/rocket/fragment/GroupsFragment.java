@@ -22,11 +22,6 @@ import com.android.rocket.activity.GroupDetailsEditor;
 import com.android.rocket.activity.GroupMessagingActivity;
 import com.android.rocket.modal.GroupInfo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

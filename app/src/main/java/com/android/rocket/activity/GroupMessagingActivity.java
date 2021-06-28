@@ -26,15 +26,6 @@ import com.android.rocket.util.Session;
 import com.android.rocket.modal.Message;
 import com.android.rocket.R;
 import com.android.rocket.modal.User;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -114,7 +105,7 @@ public class GroupMessagingActivity extends AppCompatActivity {
         Options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setupAddParticipantsDialog();
+
             }
         });
         getMessages();
@@ -153,30 +144,6 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     public void getMessages() {
-        FirebaseFirestore.getInstance().collection("groups/" + Session.SelectedGroup.getGroupId() + "/messages")
-                .orderBy("messageId", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        mMessages.clear();
-                        for (DocumentSnapshot documentSnapshot : value.getDocuments()) {
-                            Message message = new Message();
-//                            message.setMessageId(documentSnapshot.get("messageId").toString());
-//                            message.setSenderName(documentSnapshot.get("senderName").toString());
-//                            message.setSenderId(documentSnapshot.get("senderId").toString());
-//                            message.setSenderPicUrl(documentSnapshot.get("senderPicUrl").toString());
-//                            message.setPicUrl(documentSnapshot.get("picUrl").toString());
-//                            message.setText(documentSnapshot.get("text").toString());
-//                            message.setType(documentSnapshot.get("type").toString());
-//                            message.setDate(documentSnapshot.get("date").toString());
-//                            message.setTime(documentSnapshot.get("time").toString());
-                            mMessages.add(message);
-                        }
-                        mAdapter = new GroupMessageAdapter(GroupMessagingActivity.this, mMessages);
-                        mAdapter.setHasStableIds(true);
-                        mRecyclerView.setAdapter(mAdapter);
-                    }
-                });
     }
 
     public void sendMessage() {
@@ -188,51 +155,17 @@ public class GroupMessagingActivity extends AppCompatActivity {
         date = new Date();
         String Date = "" + df.format(date);
         final Message message = new Message(
-//                "" + Type,
-//                "",
-//                "" + MessageId,
-//                "" + Session.mSelectedGroup.getGroupId(),
-//                "" + Session.LoggedInUser.getName(),
-//                "" + Session.LoggedInUser.getId(),
-//                "" + Session.LoggedInUser.getPicUrl(),
-//                "" + Date,
-//                "" + Time,
-//                "" + MessageEditor.getText().toString().trim()
+
         );
 
         if (Type.equals("text")) {
-            FirebaseFirestore.getInstance().collection("groups/" + Session.SelectedGroup.getGroupId() + "/messages")
-                    .document(MessageId)
-                    .set(message);
-            MessageEditor.setText("");
+
         } else {
             Toast.makeText(this, "Uploading image", Toast.LENGTH_SHORT).show();
             SendBtn.setClickable(false);
             SendBtn.setAlpha(0.4f);
             SelectedImage.setVisibility(View.GONE);
             CloseBtn.setVisibility(View.GONE);
-            FirebaseStorage.getInstance().getReference("sent_images").child("" + System.currentTimeMillis() + ".jpg")
-                    .putFile(mImageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String PicUrl = uri.toString();
-//                                    message.setPicUrl(PicUrl);
-                                    FirebaseFirestore.getInstance().collection("groups/" + Session.SelectedGroup.getGroupId() + "/messages")
-                                            .document(MessageId)
-                                            .set(message);
-                                    Type = "text";
-                                    mImageUri = null;
-                                    MessageEditor.setText("");
-                                    SendBtn.setClickable(true);
-                                    SendBtn.setAlpha(1.0f);
-                                }
-                            });
-                        }
-                    });
         }
     }
 
@@ -245,52 +178,6 @@ public class GroupMessagingActivity extends AppCompatActivity {
                     .into(GroupIcon);
     }
 
-    public void setupAddParticipantsDialog() {
-        final List<User> users = new ArrayList<>();
-        mDialog.setContentView(R.layout.dialog_add_participants);
-        Window window = mDialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        RecyclerView recyclerView = mDialog.findViewById(R.id.recycler_view);
-        ImageView close = mDialog.findViewById(R.id.close_dialog);
-        final TextView loading = mDialog.findViewById(R.id.loading);
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDialog.dismiss();
-            }
-        });
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        final UserAdapter adapter = new UserAdapter(GroupMessagingActivity.this, users);
-        recyclerView.setAdapter(adapter);
-        FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getUserId() + "/friends").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                users.clear();
-                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                    FirebaseFirestore.getInstance().collection("users")
-                            .document(documentSnapshot.get("id").toString()).get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    User user = new User();
-                                    System.out.println("Into User");
-//                                    user.setId(documentSnapshot.get("id").toString());
-//                                    user.setName(documentSnapshot.get("name").toString());
-//                                    user.setUsername(documentSnapshot.get("username").toString());
-//                                    user.setEmail(documentSnapshot.get("email").toString());
-//                                    user.setPicUrl(documentSnapshot.get("picUrl").toString());
-                                    users.add(user);
-                                    adapter.notifyDataSetChanged();
-                                    loading.setVisibility(View.GONE);
-                                }
-                            });
-                }
-            }
-        });
-        mDialog.show();
-    }
 
     public class GroupMessageAdapter extends RecyclerView.Adapter<GroupMessageAdapter.GroupMessageViewHolder> {
 
@@ -452,15 +339,6 @@ public class GroupMessagingActivity extends AppCompatActivity {
     }
 
     private void addUser(String id, final String name) {
-        String groupId = Session.SelectedGroup.getGroupId();
-        FirebaseFirestore.getInstance().collection("users/" + id + "/groups")
-                .document(groupId)
-                .set(Session.SelectedGroup)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(GroupMessagingActivity.this, "" + name + " added to group", Toast.LENGTH_SHORT).show();
-                    }
-                });
+
     }
 }

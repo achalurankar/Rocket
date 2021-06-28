@@ -18,10 +18,6 @@ import android.widget.Toast;
 import com.android.rocket.util.Session;
 import com.android.rocket.modal.GroupInfo;
 import com.android.rocket.R;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -111,29 +107,6 @@ public class GroupDetailsEditor extends AppCompatActivity {
     }
 
     public void addGroup() {
-        final String Id = System.currentTimeMillis() + "";
-        ProgressText.setText("Uploading group icon...");
-        FirebaseStorage.getInstance().getReference("group_icons").child(Id).putFile(mImageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                String PicUrl = uri.toString();
-                                ProgressText.setText("Finishing...");
-                                String GroupNameStr = GroupName.getText().toString().trim();
-                                GroupInfo groupInfo = new GroupInfo("" + Id, "" + GroupNameStr, "" + PicUrl);
-                                FirebaseFirestore.getInstance().collection("groups").document(Id).set(groupInfo);
-                                FirebaseFirestore.getInstance().collection("users/" + Session.LoggedInUser.getUserId() + "/groups").document(Id).set(groupInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        finish();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+
     }
 }

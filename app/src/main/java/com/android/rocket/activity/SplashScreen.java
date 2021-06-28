@@ -80,9 +80,9 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onChanged(Boolean isBackground) {
                 //to update last seen
-                Intent foregroundIntent = new Intent(getApplicationContext(), LastSeenUpdater.class);
-                foregroundIntent.putExtra("isAppBackground", isBackground);
-                startService(foregroundIntent);
+//                Intent foregroundIntent = new Intent(getApplicationContext(), LastSeenUpdater.class);
+//                foregroundIntent.putExtra("isAppBackground", isBackground);
+//                startService(foregroundIntent);
             }
         });
     }
