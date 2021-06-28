@@ -45,6 +45,7 @@ import java.util.List;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Messaging activity, opens after selecting one added friends from chat activity
@@ -204,7 +205,7 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onChange(String responseData) {
                 setRecyclerview(responseData);
-//                setSeen(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId());
+                setSeen(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId());
             }
         });
     }
@@ -231,12 +232,13 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    client.newCall(request).execute();
+                    Response response = client.newCall(request).execute();
+                    Log.e(TAG, "run: setSeen Code = " + response.code() + " Body = " + response.body().string());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        });
+        }).start();
     }
 
     private void setRecyclerview(final String responseData) {
@@ -451,8 +453,7 @@ public class MessageActivity extends AppCompatActivity {
                     && message.getSenderId() == Session.LoggedInUser.getUserId()
                     && message.isSeen()
             ){
-                Log.e(TAG, "onBindViewHolder: message = " + message.getMessageId());
-//                holder.Seen.setVisibility(View.VISIBLE);
+                holder.Seen.setVisibility(View.VISIBLE);
             }
 
             holder.Item.setOnLongClickListener(new View.OnLongClickListener() {
