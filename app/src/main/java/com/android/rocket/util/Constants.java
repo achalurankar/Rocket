@@ -3,7 +3,8 @@ package com.android.rocket.util;
 public interface Constants {
     String TYPING_STATUS = "typing_status";
 
-    String host = "http://10.0.2.2:8080/api/v1";
+    String ip = "3.108.193.33";
+    String host = "http://" + ip + ":8080/api/v1";
 
     String ROCKET_PREFERENCES = "rocket_preferences";
     String USER_INFO_JSON = "UserInfo";
@@ -18,7 +19,7 @@ public interface Constants {
 
     /**
      * chat logs pictures table variables
-     * */
+     */
     String TABLE_CHAT_LOGS_PICTURES = "chat_logs_pictures";
     String FIELD_MESSAGE_ID = "message_id";
 }

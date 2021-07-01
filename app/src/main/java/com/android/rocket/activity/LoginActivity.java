@@ -2,8 +2,8 @@ package com.android.rocket.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,13 +13,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.rocket.R;
-import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.Session;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -27,15 +24,15 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
  * Login activity
- * */
+ */
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "LoginActivity";
     EditText mUsernameET, mPasswordET;
     TextView mSignUpTV;
     Button mLoginBtn;
@@ -46,8 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         setupActivityVariables();
-        mUsernameET.setText("turntables");
-        mPasswordET.setText("turntables");
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,23 +80,21 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
                 final String responseData = response.body().string();
-                if (response.code() == 404){
+                if (response.code() == 404) {
                     //invalid login
                     LoginActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(LoginActivity.this, responseData , Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, responseData, Toast.LENGTH_SHORT).show();
                         }
                     });
-                } else if (response.isSuccessful()){
-                    System.out.println(responseData);
-
+                } else if (response.isSuccessful()) {
                     //initialize session variables
-                    if(Session.saveUserInfo(responseData)) {
+                    if (Session.saveUserInfo(responseData)) {
                         //save current user info in device
                         getSharedPreferences(Constants.ROCKET_PREFERENCES, Context.MODE_PRIVATE)
                                 .edit()
-                                .putString(Constants.USER_INFO_JSON,responseData)
+                                .putString(Constants.USER_INFO_JSON, responseData)
                                 .apply();
                         //start chats activity
                         startActivity(new Intent(LoginActivity.this, RootChatsActivity.class));
@@ -110,21 +103,15 @@ public class LoginActivity extends AppCompatActivity {
                         LoginActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(LoginActivity.this, "Something went wrong!" , Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
+                } else {
+                    Log.e(TAG, "onResponse: " + responseData);
                 }
             }
         });
-
-        //on successful login
-//        final Map<String, String> map = new HashMap<>();
-//        map.put("status", "online");
-//        FirebaseFirestore.getInstance().collection("user_status")
-//                .document(GlobalClass.LoggedInUser.getId())
-//                .set(map);
-//        TokenRefresher.updateToken(GlobalClass.LoggedInUser.getId());
     }
 
     private void setupActivityVariables() {

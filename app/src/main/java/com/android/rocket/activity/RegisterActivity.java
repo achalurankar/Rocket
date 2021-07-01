@@ -47,7 +47,7 @@ import okhttp3.Response;
 
 /**
  * Registration activity
- * */
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
@@ -103,10 +103,11 @@ public class RegisterActivity extends AppCompatActivity {
         ProfilePic = findViewById(R.id.ProfilePic);
 
         //test
-        mUsernameET.setText("turntables");
-        mPasswordET.setText("turntables");
-        mConfirmPasswordET.setText("turntables");
-        mEmailET.setText("turntables@mail.com");
+        mFullNameET.setText("DOES'NT MATTER");
+        mUsernameET.setText("padfoot");
+        mPasswordET.setText("123");
+        mConfirmPasswordET.setText("123");
+        mEmailET.setText("padfoot@mail.com");
 
         mNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +116,8 @@ public class RegisterActivity extends AppCompatActivity {
                         && !mEmailET.getText().toString().trim().equals("")
 //                        && !mFullNameET.getText().toString().trim().equals("")
                         && !mUsernameET.getText().toString().trim().equals("")
-                        && mPasswordET.getText().toString().trim().length() >= 6)) {
+//                        && mPasswordET.getText().toString().trim().length() >= 6
+                )) {
                     UserInfoLayout.setVisibility(View.GONE);
                     UserPicLayout.setVisibility(View.VISIBLE);
                     SecondRB.setChecked(true);
@@ -174,7 +176,7 @@ public class RegisterActivity extends AppCompatActivity {
         System.out.println("Registration");
         final String Id = System.currentTimeMillis() + "";
         ResponseMsg.setText("Registering your info...");
-        try{
+        try {
             Picture = FileUtil.getBase64FromUri(mImageUri);
         } catch (IOException e) {
             Picture = null;
@@ -183,13 +185,13 @@ public class RegisterActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient.Builder().build();
 
         JSONObject wrapper = new JSONObject();
-        try{
+        try {
             wrapper.put("username", Username);
             wrapper.put("password", Password);
             wrapper.put("emailId", Email);
             wrapper.put("picture", Picture);
-            wrapper.put("picture_version", System.currentTimeMillis());
-        } catch (JSONException e){
+            wrapper.put("pictureVersion", System.currentTimeMillis());
+        } catch (JSONException e) {
             wrapper = null;
             System.out.println("Wrapper Null");
         }
@@ -207,13 +209,13 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                if(response.isSuccessful()){
-                    final String responseData = response.body().string();
+                final String responseData = response.body().string();
+                if (response.isSuccessful()) {
                     RegisterActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(RegisterActivity.this, "" + responseData, Toast.LENGTH_SHORT).show();
-                            if(responseData.toLowerCase().contains("succ")){
+                            if (responseData.toLowerCase().contains("succ")) {
                                 System.out.println("Registration Done");
                                 ResponseMsg.setText("Registration successful");
                                 Drawable drawable = Done.getDrawable();
@@ -236,6 +238,8 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         }
                     });
+                } else {
+                    Log.e(TAG, "onResponse: " + responseData);
                 }
             }
         });
@@ -254,10 +258,9 @@ public class RegisterActivity extends AppCompatActivity {
                         .into(ProfilePic);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
-                Toast.makeText(this, "Failed to select image Error : " + error , Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to select image Error : " + error, Toast.LENGTH_SHORT).show();
             }
-        }
-        else{
+        } else {
             Toast.makeText(this, "Failed to select image", Toast.LENGTH_SHORT).show();
         }
     }
