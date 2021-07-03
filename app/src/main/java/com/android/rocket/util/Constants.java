@@ -4,6 +4,7 @@ public interface Constants {
     String TYPING_STATUS = "typing_status";
 
     String ip = "3.108.193.33";
+    String localhost = "localhost";
     String host = "http://" + ip + ":8080/api/v1";
 
     String ROCKET_PREFERENCES = "rocket_preferences";

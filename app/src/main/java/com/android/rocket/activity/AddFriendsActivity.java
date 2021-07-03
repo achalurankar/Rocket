@@ -98,7 +98,7 @@ public class AddFriendsActivity extends AppCompatActivity {
                                     jsonObject.getString("username"),
                                     jsonObject.getString("emailId"),
                                     jsonObject.getString("picture"),
-                                    jsonObject.getLong("picture_version")
+                                    jsonObject.getLong("pictureVersion")
                             );
                             mUsers.add(user);
                             runOnUiThread(new Runnable() {

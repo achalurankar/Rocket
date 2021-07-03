@@ -41,7 +41,7 @@ public class MessageListener {
                 String oldData = null;
                 while (CONTINUE) {
                     try {
-                        Log.e(TAG, String.format("run: listening messages for %s/%s", userId, friendId));
+//                        Log.e(TAG, String.format("run: listening messages for %s/%s", userId, friendId));
                         Response response = mClient.newCall(request).execute();
                         if (response.isSuccessful()) {
                             String responseData = response.body().string();
@@ -53,13 +53,13 @@ public class MessageListener {
                                 if(!oldData.equals(responseData)){
                                     //dispatch message
                                     listener.onChange(responseData);
-                                    Log.e(TAG, String.format("run: message dispatched for %s/%s", userId, friendId));
+//                                    Log.e(TAG, String.format("run: message dispatched for %s/%s", userId, friendId));
                                     oldData = responseData;
                                 }
 
                             }
                         } else {
-                            Log.e(TAG, String.format("run: unsuccessful response for %s/%s", userId, friendId));
+//                            Log.e(TAG, String.format("run: unsuccessful response for %s/%s", userId, friendId));
                             CONTINUE = false;
                         }
                         Thread.sleep(1000);
