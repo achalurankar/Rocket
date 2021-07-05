@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.rocket.R;
 import com.android.rocket.modal.Message;
-import com.android.rocket.service.MessageListener;
+import com.android.rocket.service.CustomListener;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.CustomNotification;
@@ -30,9 +30,7 @@ import com.android.rocket.util.FileUtil;
 import com.android.rocket.util.Session;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,7 +81,7 @@ public class MessageActivity extends AppCompatActivity {
     public static String mSelectedImageUrl;
 
     //listeners
-    final MessageListener messageListener = new MessageListener();
+    final CustomListener messageListener = new CustomListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,9 +122,9 @@ public class MessageActivity extends AppCompatActivity {
         SelectImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CropImage.activity()
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .start(MessageActivity.this);
+//                CropImage.activity()
+//                        .setGuidelines(CropImageView.Guidelines.ON)
+//                        .start(MessageActivity.this);
             }
         });
 
@@ -201,7 +199,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void attachMessageListener() {
-        messageListener.listenMessages(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId(), new MessageListener.Listener() {
+        messageListener.listenMessages(Constants.host + "/message/" + Session.LoggedInUser.getUserId() + "/" + Session.SelectedUser.getUserId(), new CustomListener.Listener() {
             @Override
             public void onChange(String responseData) {
                 setRecyclerview(responseData);

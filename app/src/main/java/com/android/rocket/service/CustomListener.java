@@ -2,19 +2,13 @@ package com.android.rocket.service;
 
 import android.util.Log;
 
-import com.android.rocket.modal.Message;
-import com.android.rocket.util.Constants;
-import com.android.rocket.util.Session;
-
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MessageListener {
+public class CustomListener {
 
     private static final String TAG = "MessageListener";
     private boolean CONTINUE = true;
@@ -28,7 +22,7 @@ public class MessageListener {
         this.CONTINUE = false;
     }
 
-    public void listenMessages(final int userId, final int friendId, final Listener listener) {
+    public void listenMessages(final String url, final Listener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -36,12 +30,11 @@ public class MessageListener {
                         .build();
                 Request request;
                 request = new Request.Builder()
-                        .url(Constants.host + "/message/" + userId + "/" + friendId)
+                        .url(url)
                         .build();
                 String oldData = null;
                 while (CONTINUE) {
                     try {
-//                        Log.e(TAG, String.format("run: listening messages for %s/%s", userId, friendId));
                         Response response = mClient.newCall(request).execute();
                         if (response.isSuccessful()) {
                             String responseData = response.body().string();
@@ -53,13 +46,12 @@ public class MessageListener {
                                 if(!oldData.equals(responseData)){
                                     //dispatch message
                                     listener.onChange(responseData);
-//                                    Log.e(TAG, String.format("run: message dispatched for %s/%s", userId, friendId));
                                     oldData = responseData;
                                 }
 
                             }
                         } else {
-//                            Log.e(TAG, String.format("run: unsuccessful response for %s/%s", userId, friendId));
+                            Log.e(TAG, "run: unsuccessful response for url=" + url);
                             CONTINUE = false;
                         }
                         Thread.sleep(1000);
@@ -71,7 +63,7 @@ public class MessageListener {
                         }
                     }
                 }
-                Log.e(TAG, String.format("run: stopped listening messages for %s/%s", userId, friendId));
+                Log.e(TAG, "run: stopped listening messages for url=" + url);
             }
         }).start();
     }

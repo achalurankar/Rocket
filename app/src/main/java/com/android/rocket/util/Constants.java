@@ -3,8 +3,21 @@ package com.android.rocket.util;
 public interface Constants {
     String TYPING_STATUS = "typing_status";
 
+    /**
+     *  aws ec2 instance ip address
+     * */
     String ip = "3.108.193.33";
-    String localhost = "localhost";
+
+    /**
+     *  localhost ip address
+     * */
+    String localhost = "10.0.2.2";
+
+    /**
+     *  Api endpoint
+     *  either aws ec2 instance ip
+     *  or localhost
+     * */
     String host = "http://" + ip + ":8080/api/v1";
 
     String ROCKET_PREFERENCES = "rocket_preferences";
