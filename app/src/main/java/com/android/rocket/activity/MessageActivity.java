@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.rocket.R;
-import com.android.rocket.modal.Message;
+import com.android.rocket.model.Message;
 import com.android.rocket.service.CustomListener;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;

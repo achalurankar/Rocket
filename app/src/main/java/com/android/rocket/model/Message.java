@@ -1,4 +1,4 @@
-package com.android.rocket.modal;
+package com.android.rocket.model;
 
 /**
  * Modal class for message details

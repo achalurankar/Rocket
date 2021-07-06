@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.rocket.R;
-import com.android.rocket.modal.User;
+import com.android.rocket.model.User;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.Session;

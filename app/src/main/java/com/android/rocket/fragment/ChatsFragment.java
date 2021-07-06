@@ -22,7 +22,7 @@ import com.android.rocket.util.FileUtil;
 import com.android.rocket.util.Session;
 import com.android.rocket.R;
 import com.android.rocket.activity.MessageActivity;
-import com.android.rocket.modal.User;
+import com.android.rocket.model.User;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;

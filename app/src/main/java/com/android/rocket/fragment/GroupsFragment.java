@@ -20,7 +20,7 @@ import com.android.rocket.util.Session;
 import com.android.rocket.R;
 import com.android.rocket.activity.GroupDetailsEditor;
 import com.android.rocket.activity.GroupMessagingActivity;
-import com.android.rocket.modal.GroupInfo;
+import com.android.rocket.model.GroupInfo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 

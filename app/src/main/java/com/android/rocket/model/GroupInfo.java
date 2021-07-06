@@ -1,4 +1,4 @@
-package com.android.rocket.modal;
+package com.android.rocket.model;
 
 public class GroupInfo {
     String GroupId, GroupName, PicUrl;

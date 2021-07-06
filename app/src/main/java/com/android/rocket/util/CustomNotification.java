@@ -1,7 +1,7 @@
 package com.android.rocket.util;
 
-import com.android.rocket.modal.Packet;
-import com.android.rocket.modal.ResponseBody;
+import com.android.rocket.model.Packet;
+import com.android.rocket.model.ResponseBody;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

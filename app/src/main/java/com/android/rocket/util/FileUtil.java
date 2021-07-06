@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.android.rocket.modal.User;
+import com.android.rocket.model.User;
 
 import java.io.File;
 import java.io.FileOutputStream;

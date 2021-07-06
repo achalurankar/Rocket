@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.android.rocket.R;
-import com.android.rocket.modal.User;
 import com.android.rocket.service.LastSeenUpdater;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.SectionsPagerAdapter;
@@ -20,8 +19,6 @@ import com.android.rocket.util.Session;
 import com.google.android.material.tabs.TabLayout;
 
 import org.json.JSONException;
-
-import java.io.IOException;
 
 public class RootChatsActivity extends AppCompatActivity {
 

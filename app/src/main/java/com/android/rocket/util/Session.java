@@ -2,8 +2,8 @@ package com.android.rocket.util;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.android.rocket.modal.GroupInfo;
-import com.android.rocket.modal.User;
+import com.android.rocket.model.GroupInfo;
+import com.android.rocket.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
