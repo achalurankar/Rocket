@@ -82,6 +82,7 @@ public class MessageActivity extends AppCompatActivity {
 
     //listeners
     final CustomListener messageListener = new CustomListener();
+    final CustomListener lastSeenListener = new CustomListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,10 +197,21 @@ public class MessageActivity extends AppCompatActivity {
                 .load(picture)
                 .placeholder(R.drawable.user_vector)
                 .into(ProfilePic);
+        lastSeenListener.listenMessages(Constants.host + "/user/status/" + Session.SelectedUser.getUserId(), new CustomListener.EventListener() {
+            @Override
+            public void onChange(final String responseData) {
+                MessageActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        UserStatus.setText(responseData);
+                    }
+                });
+            }
+        });
     }
 
     private void attachMessageListener() {
-        messageListener.listenMessages(Constants.host + "/message/" + Session.LoggedInUser.getUserId() + "/" + Session.SelectedUser.getUserId(), new CustomListener.Listener() {
+        messageListener.listenMessages(Constants.host + "/message/" + Session.LoggedInUser.getUserId() + "/" + Session.SelectedUser.getUserId(), new CustomListener.EventListener() {
             @Override
             public void onChange(String responseData) {
                 setRecyclerview(responseData);
@@ -535,6 +547,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         messageListener.stop();
+        lastSeenListener.stop();
     }
 
     @Override

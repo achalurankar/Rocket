@@ -57,13 +57,13 @@ public class ChatsFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new ChatsAdapter(getActivity(), mChats);
         mRecyclerView.setAdapter(mAdapter);
+        updateChats();
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateChats();
     }
 
     //method to update chats
@@ -97,12 +97,13 @@ public class ChatsFragment extends Fragment {
                                     jsonObject.getLong("pictureVersion")
                             );
                             mChats.add(user);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mAdapter.notifyDataSetChanged();
-                                }
-                            });
+                            if(getActivity() != null)
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mAdapter.notifyDataSetChanged();
+                                    }
+                                });
                         }
                     } catch (JSONException e){
                         e.printStackTrace();

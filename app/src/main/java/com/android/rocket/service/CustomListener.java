@@ -13,7 +13,7 @@ public class CustomListener {
     private static final String TAG = "MessageListener";
     private boolean CONTINUE = true;
 
-    public interface Listener {
+    public interface EventListener {
         void onChange(String responseData);
     }
 
@@ -22,7 +22,7 @@ public class CustomListener {
         this.CONTINUE = false;
     }
 
-    public void listenMessages(final String url, final Listener listener) {
+    public void listenMessages(final String url, final EventListener eventListener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -41,11 +41,11 @@ public class CustomListener {
                             if(oldData == null){
                                 oldData = responseData;
                                 //dispatch message
-                                listener.onChange(responseData);
+                                eventListener.onChange(responseData);
                             } else {
                                 if(!oldData.equals(responseData)){
                                     //dispatch message
-                                    listener.onChange(responseData);
+                                    eventListener.onChange(responseData);
                                     oldData = responseData;
                                 }
 
