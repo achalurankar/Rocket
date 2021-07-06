@@ -36,4 +36,8 @@ public interface Constants {
      */
     String TABLE_CHAT_LOGS_PICTURES = "chat_logs_pictures";
     String FIELD_MESSAGE_ID = "message_id";
+
+    int TYPING = 1;
+    int OFFLINE = 2;
+    int ONLINE = 3;
 }

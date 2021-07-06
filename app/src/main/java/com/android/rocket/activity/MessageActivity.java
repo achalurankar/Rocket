@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.rocket.R;
 import com.android.rocket.model.Message;
 import com.android.rocket.service.CustomListener;
+import com.android.rocket.service.LastSeenUpdater;
 import com.android.rocket.util.Client;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.CustomNotification;
@@ -157,6 +161,7 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         attachMessageListener();
+        attachListenerForEditText();
     }
 
     @Override
@@ -190,6 +195,50 @@ public class MessageActivity extends AppCompatActivity {
         }
     }
 
+    //handler to manage calls for typing status of user
+    Handler mHandler = new Handler();
+    Runnable runnable;
+    Message TypingStatusPacket;
+    String OldStatus = "";
+
+    private void attachListenerForEditText() {
+        TypingStatusPacket = new Message();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                OldStatus = "online";
+                new LastSeenUpdater().setUserStatus(Constants.ONLINE);
+            }
+        };
+        MessageEditor.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 0)
+                    return;
+                /*if old status was typing earlier then,
+                 no need to send packet again as its already displayed typing on the other side*/
+                if (!OldStatus.equals("typing...")) {
+                    new LastSeenUpdater().setUserStatus(Constants.TYPING);
+                    OldStatus = "typing...";
+                }
+                //remove callback if user is still typing
+                mHandler.removeCallbacks(runnable);
+                //register again
+                mHandler.postDelayed(runnable, 1500);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
     private void updateRecipientInfo() {
         Username.setText(Session.SelectedUser.getUsername());
         File picture = FileUtil.getImageFileUserData(this, Session.SelectedUser);
@@ -203,7 +252,26 @@ public class MessageActivity extends AppCompatActivity {
                 MessageActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        UserStatus.setText(responseData);
+                        if (responseData.contains("typing")) {
+                            /*
+                            if status contains typing
+                            format should be typingX where X is userId to determine for which user selected user is typing
+                            replacing typing gives user id
+                            */
+                            String[] strings = responseData.split("_");
+                            try{
+                                int id = Integer.parseInt(strings[1]);
+                                if (id == Session.LoggedInUser.getUserId())
+                                    UserStatus.setText("typing...");
+                                else
+                                    UserStatus.setText("online");
+                            } catch (NumberFormatException e){
+                                UserStatus.setText("online");
+                            }
+                        }
+                        else
+                            UserStatus.setText(responseData);
+
                     }
                 });
             }
@@ -325,7 +393,7 @@ public class MessageActivity extends AppCompatActivity {
                     }
                 }
             }).start();
-        //if user wants to send image
+            //if user wants to send image
         } else {
             if (true)
                 return;
@@ -459,10 +527,10 @@ public class MessageActivity extends AppCompatActivity {
                 }
             });
 
-            if(position == 0
+            if (position == 0
                     && message.getSenderId() == Session.LoggedInUser.getUserId()
                     && message.isSeen()
-            ){
+            ) {
                 holder.Seen.setVisibility(View.VISIBLE);
             }
 

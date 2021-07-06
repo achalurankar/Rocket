@@ -44,46 +44,54 @@ public class LastSeenUpdater extends Service {
                 .build();
         startForeground(1, notification);
         //set last seen status
-        try {
-            setUserStatus(isAppBackground);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        setUserStatus(isAppBackground ? Constants.OFFLINE : Constants.ONLINE);
         return START_NOT_STICKY;
     }
 
-    public void setUserStatus(boolean isAppBackground) throws JSONException {
+    public void setUserStatus(int type) {
         //if user is logged in
         if (Session.LoggedInUser != null) {
             //update last seen
             @SuppressLint("SimpleDateFormat")
             DateFormat df = new SimpleDateFormat("h:mm aa dd/MM/yy");
             Date obj = new Date();
-            final JSONObject map = new JSONObject();
-            map.put("userId", Session.LoggedInUser.getUserId());
-            if (isAppBackground)
-                map.put("status", "" + df.format(obj));
-            else
-                map.put("status", "online");
-            RequestBody requestBody = RequestBody.create(Client.JSON, String.valueOf(map));
-            final Request request = new Request.Builder()
-                    .method("POST", requestBody)
-                    .url(Constants.host + "/user/status")
-                    .addHeader("Content-Type", "application/json")
-                    .build();
-
-            final OkHttpClient client = new OkHttpClient.Builder().build();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        client.newCall(request).execute();
-                        stopSelf();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            try {
+                final JSONObject map = new JSONObject();
+                map.put("userId", Session.LoggedInUser.getUserId());
+                switch (type) {
+                    case Constants.OFFLINE:
+                        map.put("status", "" + df.format(obj));
+                        break;
+                    case Constants.ONLINE:
+                        map.put("status", "online");
+                        break;
+                    case Constants.TYPING:
+                        String status = "typing_" + Session.SelectedUser.getUserId();
+                        map.put("status", status);
+                        break;
                 }
-            }).start();
+                RequestBody requestBody = RequestBody.create(Client.JSON, String.valueOf(map));
+                final Request request = new Request.Builder()
+                        .method("POST", requestBody)
+                        .url(Constants.host + "/user/status")
+                        .addHeader("Content-Type", "application/json")
+                        .build();
+
+                final OkHttpClient client = new OkHttpClient.Builder().build();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            client.newCall(request).execute();
+                            stopSelf();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         } else
             stopSelf();
     }

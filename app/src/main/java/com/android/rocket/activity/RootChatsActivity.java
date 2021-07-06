@@ -18,8 +18,6 @@ import com.android.rocket.util.SectionsPagerAdapter;
 import com.android.rocket.util.Session;
 import com.google.android.material.tabs.TabLayout;
 
-import org.json.JSONException;
-
 public class RootChatsActivity extends AppCompatActivity {
 
     RootChatsActivity mInstance = this;
@@ -42,11 +40,7 @@ public class RootChatsActivity extends AppCompatActivity {
                         .edit()
                         .remove(Constants.USER_INFO_JSON)
                         .apply();
-                try {
-                    new LastSeenUpdater().setUserStatus(true);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                new LastSeenUpdater().setUserStatus(Constants.OFFLINE);
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finishAffinity();
                 Session.LoggedInUser = null;
