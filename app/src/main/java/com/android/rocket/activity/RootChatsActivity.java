@@ -13,10 +13,15 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.android.rocket.R;
 import com.android.rocket.modal.User;
+import com.android.rocket.service.LastSeenUpdater;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.SectionsPagerAdapter;
 import com.android.rocket.util.Session;
 import com.google.android.material.tabs.TabLayout;
+
+import org.json.JSONException;
+
+import java.io.IOException;
 
 public class RootChatsActivity extends AppCompatActivity {
 
@@ -40,18 +45,14 @@ public class RootChatsActivity extends AppCompatActivity {
                         .edit()
                         .remove(Constants.USER_INFO_JSON)
                         .apply();
-//                DateFormat df = new SimpleDateFormat("h:mm aa dd/MM/yy");
-//                Date obj = new Date();
-//                System.out.println("Last Online : " + df.format(obj));
-//                final Map<String, String> map = new HashMap<>();
-//                map.put("status", "" + df.format(obj));
-//                FirebaseFirestore.getInstance().collection("user_status")
-//                        .document(Session.LoggedInUser.getId())
-//                        .set(map);
-//                FirebaseAuth.getInstance().signOut();
+                try {
+                    new LastSeenUpdater().setUserStatus(true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finishAffinity();
-                Session.LoggedInUser = new User();
+                Session.LoggedInUser = null;
             }
         });
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());

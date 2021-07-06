@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class Session {
 
-    public static User LoggedInUser = new User();
+    public static User LoggedInUser = null;
     public static User SelectedUser;
     public static GroupInfo SelectedGroup;
     public static SQLiteDatabase DbRef;
@@ -19,6 +19,7 @@ public class Session {
         boolean result = true;
         try {
             JSONObject responseObj = new JSONObject(responseData);
+            Session.LoggedInUser = new User();
             Session.LoggedInUser.setUsername(responseObj.getString("username"));
             Session.LoggedInUser.setUserId(responseObj.getInt("userId"));
             Session.LoggedInUser.setEmailId(responseObj.getString("emailId"));

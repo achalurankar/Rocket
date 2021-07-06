@@ -1,22 +1,31 @@
 package com.android.rocket.service;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.android.rocket.R;
 import com.android.rocket.controller.AppController;
+import com.android.rocket.util.Client;
+import com.android.rocket.util.Constants;
+import com.android.rocket.util.Session;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class LastSeenUpdater extends Service {
 
@@ -27,7 +36,7 @@ public class LastSeenUpdater extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean input = intent.getBooleanExtra("isAppBackground", true);
+        boolean isAppBackground = intent.getBooleanExtra("isAppBackground", true);
         //foreground notification
         Notification notification = new NotificationCompat.Builder(this, AppController.LAST_SEEN_CHANNEL_ID)
                 .setContentTitle("Updating messages...")
@@ -35,21 +44,46 @@ public class LastSeenUpdater extends Service {
                 .build();
         startForeground(1, notification);
         //set last seen status
-        setUserStatus(input);
+        try {
+            setUserStatus(isAppBackground);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return START_NOT_STICKY;
     }
 
-    private void setUserStatus(boolean input) {
+    public void setUserStatus(boolean isAppBackground) throws JSONException {
         //if user is logged in
-        if (true) {
+        if (Session.LoggedInUser != null) {
+            //update last seen
+            @SuppressLint("SimpleDateFormat")
             DateFormat df = new SimpleDateFormat("h:mm aa dd/MM/yy");
             Date obj = new Date();
-            final Map<String, String> map = new HashMap<>();
-            if (input)
+            final JSONObject map = new JSONObject();
+            map.put("userId", Session.LoggedInUser.getUserId());
+            if (isAppBackground)
                 map.put("status", "" + df.format(obj));
             else
                 map.put("status", "online");
-            //update last seen
+            RequestBody requestBody = RequestBody.create(Client.JSON, String.valueOf(map));
+            final Request request = new Request.Builder()
+                    .method("POST", requestBody)
+                    .url(Constants.host + "/user/status")
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            final OkHttpClient client = new OkHttpClient.Builder().build();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        client.newCall(request).execute();
+                        stopSelf();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         } else
             stopSelf();
     }

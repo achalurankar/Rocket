@@ -13,10 +13,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.rocket.R;
+import com.android.rocket.service.LastSeenUpdater;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.Session;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -96,6 +98,11 @@ public class LoginActivity extends AppCompatActivity {
                                 .edit()
                                 .putString(Constants.USER_INFO_JSON, responseData)
                                 .apply();
+                        try {
+                            new LastSeenUpdater().setUserStatus(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         //start chats activity
                         startActivity(new Intent(LoginActivity.this, RootChatsActivity.class));
                         finish();

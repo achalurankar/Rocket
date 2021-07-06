@@ -103,11 +103,11 @@ public class RegisterActivity extends AppCompatActivity {
         ProfilePic = findViewById(R.id.ProfilePic);
 
         //test
-        mFullNameET.setText("DOES'NT MATTER");
-        mUsernameET.setText("padfoot");
-        mPasswordET.setText("123");
-        mConfirmPasswordET.setText("123");
-        mEmailET.setText("padfoot@mail.com");
+//        mFullNameET.setText("DOES'NT MATTER");
+//        mUsernameET.setText("padfoot");
+//        mPasswordET.setText("123");
+//        mConfirmPasswordET.setText("123");
+//        mEmailET.setText("padfoot@mail.com");
 
         mNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override

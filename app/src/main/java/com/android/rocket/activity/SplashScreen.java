@@ -80,9 +80,9 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onChanged(Boolean isBackground) {
                 //to update last seen
-//                Intent foregroundIntent = new Intent(getApplicationContext(), LastSeenUpdater.class);
-//                foregroundIntent.putExtra("isAppBackground", isBackground);
-//                startService(foregroundIntent);
+                Intent foregroundIntent = new Intent(getApplicationContext(), LastSeenUpdater.class);
+                foregroundIntent.putExtra("isAppBackground", isBackground);
+                startService(foregroundIntent);
             }
         });
     }
@@ -93,9 +93,9 @@ public class SplashScreen extends AppCompatActivity {
             public void run() {
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                finish();
-            }
-        }, ANIM_DURATION + 100);
+        finish();
+    }
+}, ANIM_DURATION + 100);
     }
 
     private void start() {
