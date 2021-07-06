@@ -198,11 +198,9 @@ public class MessageActivity extends AppCompatActivity {
     //handler to manage calls for typing status of user
     Handler mHandler = new Handler();
     Runnable runnable;
-    Message TypingStatusPacket;
     String OldStatus = "";
 
     private void attachListenerForEditText() {
-        TypingStatusPacket = new Message();
         runnable = new Runnable() {
             @Override
             public void run() {
