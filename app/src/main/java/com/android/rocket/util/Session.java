@@ -2,6 +2,7 @@ package com.android.rocket.util;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import com.android.rocket.model.Friend;
 import com.android.rocket.model.GroupInfo;
 import com.android.rocket.model.User;
 
@@ -11,7 +12,7 @@ import org.json.JSONObject;
 public class Session {
 
     public static User LoggedInUser = null;
-    public static User SelectedUser;
+    public static Friend SelectedFriend;
     public static GroupInfo SelectedGroup;
     public static SQLiteDatabase DbRef;
 

@@ -92,7 +92,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
-        if (Session.SelectedUser == null)
+        if (Session.SelectedFriend == null)
             finish();
         mClient = new OkHttpClient.Builder().build();
         preferences = getSharedPreferences("scutiPreferences", Context.MODE_PRIVATE);
@@ -238,13 +238,18 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void updateRecipientInfo() {
-        Username.setText(Session.SelectedUser.getUsername());
-        File picture = FileUtil.getImageFileUserData(this, Session.SelectedUser);
+        Username.setText(Session.SelectedFriend.getUsername());
+        File picture = FileUtil.getImageFileUserData(this,
+                Session.SelectedFriend.getUserId(),
+                Session.SelectedFriend.getUsername(),
+                Session.SelectedFriend.getPicture(),
+                Session.SelectedFriend.getPictureVersion()
+        );
         Picasso.with(this)
                 .load(picture)
                 .placeholder(R.drawable.user_vector)
                 .into(ProfilePic);
-        lastSeenListener.listenMessages(Constants.host + "/user/status/" + Session.SelectedUser.getUserId(), new CustomListener.EventListener() {
+        lastSeenListener.listenMessages(Constants.host + "/user/status/" + Session.SelectedFriend.getUserId(), new CustomListener.EventListener() {
             @Override
             public void onChange(final String responseData) {
                 MessageActivity.this.runOnUiThread(new Runnable() {
@@ -257,17 +262,16 @@ public class MessageActivity extends AppCompatActivity {
                             replacing typing gives user id
                             */
                             String[] strings = responseData.split("_");
-                            try{
+                            try {
                                 int id = Integer.parseInt(strings[1]);
                                 if (id == Session.LoggedInUser.getUserId())
                                     UserStatus.setText("typing...");
                                 else
                                     UserStatus.setText("online");
-                            } catch (NumberFormatException e){
+                            } catch (NumberFormatException e) {
                                 UserStatus.setText("online");
                             }
-                        }
-                        else
+                        } else
                             UserStatus.setText(responseData);
 
                     }
@@ -277,11 +281,11 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void attachMessageListener() {
-        messageListener.listenMessages(Constants.host + "/message/" + Session.LoggedInUser.getUserId() + "/" + Session.SelectedUser.getUserId(), new CustomListener.EventListener() {
+        messageListener.listenMessages(Constants.host + "/message/" + Session.LoggedInUser.getUserId() + "/" + Session.SelectedFriend.getUserId(), new CustomListener.EventListener() {
             @Override
             public void onChange(String responseData) {
                 setRecyclerview(responseData);
-                setSeen(Session.LoggedInUser.getUserId(), Session.SelectedUser.getUserId());
+                setSeen(Session.LoggedInUser.getUserId(), Session.SelectedFriend.getUserId());
             }
         });
     }
@@ -359,7 +363,7 @@ public class MessageActivity extends AppCompatActivity {
             JSONObject wrapper = new JSONObject();
             try {
                 wrapper.put("senderId", Session.LoggedInUser.getUserId());
-                wrapper.put("receiverId", Session.SelectedUser.getUserId());
+                wrapper.put("receiverId", Session.SelectedFriend.getUserId());
                 wrapper.put("picture", "no-pic");
                 wrapper.put("text", messageText);
                 wrapper.put("type", Type);
@@ -473,7 +477,7 @@ public class MessageActivity extends AppCompatActivity {
                         if (message.getReplyOwner().equals(Session.LoggedInUser.getUsername()))
                             text = "You\n";
                         else
-                            text = Session.SelectedUser.getUsername() + "\n";
+                            text = Session.SelectedFriend.getUsername() + "\n";
                         holder.SenderReplyToText.setText(text + message.getReplyText());
                         break;
                 }
@@ -507,7 +511,7 @@ public class MessageActivity extends AppCompatActivity {
                         if (message.getReplyOwner().equals(Session.LoggedInUser.getUsername()))
                             text = "You\n";
                         else
-                            text = Session.SelectedUser.getUsername() + "\n";
+                            text = Session.SelectedFriend.getUsername() + "\n";
                         holder.ReceiverReplyText.setText(text + message.getReplyText());
                         break;
                 }
@@ -541,8 +545,8 @@ public class MessageActivity extends AppCompatActivity {
                         text = "You\n";
                         ReplyOwner = Session.LoggedInUser.getUsername();
                     } else {
-                        ReplyOwner = Session.SelectedUser.getUsername();
-                        text = Session.SelectedUser.getUsername() + "\n";
+                        ReplyOwner = Session.SelectedFriend.getUsername();
+                        text = Session.SelectedFriend.getUsername() + "\n";
                     }
                     text = text + message.getText();
                     ReplyText = message.getText();
@@ -618,6 +622,8 @@ public class MessageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        startActivity(new Intent(getApplicationContext(), RootChatsActivity.class));
+        overridePendingTransition(0,0);
         finish();
     }
 }

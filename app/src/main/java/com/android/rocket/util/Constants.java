@@ -18,7 +18,7 @@ public interface Constants {
      *  either aws ec2 instance ip
      *  or localhost
      * */
-    String host = "http://" + ip + ":8080/api/v1";
+    String host = "http://" + localhost + ":8080/api/v1";
 
     String ROCKET_PREFERENCES = "rocket_preferences";
     String USER_INFO_JSON = "UserInfo";

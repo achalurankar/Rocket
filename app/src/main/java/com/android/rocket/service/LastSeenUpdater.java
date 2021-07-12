@@ -66,7 +66,7 @@ public class LastSeenUpdater extends Service {
                         map.put("status", "online");
                         break;
                     case Constants.TYPING:
-                        String status = "typing_" + Session.SelectedUser.getUserId();
+                        String status = "typing_" + Session.SelectedFriend.getUserId();
                         map.put("status", status);
                         break;
                 }

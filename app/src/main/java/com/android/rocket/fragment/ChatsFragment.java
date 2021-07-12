@@ -13,16 +13,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.rocket.R;
+import com.android.rocket.activity.MessageActivity;
+import com.android.rocket.model.Friend;
 import com.android.rocket.util.Constants;
 import com.android.rocket.util.FileUtil;
 import com.android.rocket.util.Session;
-import com.android.rocket.R;
-import com.android.rocket.activity.MessageActivity;
-import com.android.rocket.model.User;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +46,7 @@ public class ChatsFragment extends Fragment {
 
     RecyclerView mRecyclerView;
     ChatsAdapter mAdapter;
-    List<User> mChats = new ArrayList<>();
+    List<Friend> mFriends = new ArrayList<>();
     public static final String TAG = "ChatsFragment";
 
     @Nullable
@@ -55,7 +56,7 @@ public class ChatsFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new ChatsAdapter(getActivity(), mChats);
+        mAdapter = new ChatsAdapter(getActivity(), mFriends);
         mRecyclerView.setAdapter(mAdapter);
         updateChats();
         return view;
@@ -81,31 +82,39 @@ public class ChatsFragment extends Fragment {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     final String responseData = response.body().string();
-                    try{
-                        JSONArray array = new JSONArray(responseData);
-                        int length = array.length();
-                        mChats.clear();
+                    try {
+                        JSONArray friends = new JSONArray(responseData);
+                        int length = friends.length();
+                        mFriends.clear();
                         for (int i = 0; i < length; i++) {
-                            JSONObject jsonObject = (JSONObject) array.get(i);
-                            User user = new User(
-                                    jsonObject.getInt("userId"),
-                                    jsonObject.getString("username"),
-                                    jsonObject.getString("emailId"),
-                                    jsonObject.getString("picture"),
-                                    jsonObject.getLong("pictureVersion")
+                            JSONObject friendJSONObject = friends.getJSONObject(i);
+                            JSONObject recentMessage = friendJSONObject.getJSONObject("recentMessage");
+                            Friend friend = new Friend(
+                                    friendJSONObject.getInt("userId"),
+                                    friendJSONObject.getString("username"),
+                                    friendJSONObject.getString("picture"),
+                                    friendJSONObject.getLong("pictureVersion"),
+                                    new Friend.RecentMessage(
+                                            recentMessage.getInt("senderId"),
+                                            recentMessage.getInt("receiverId"),
+                                            recentMessage.getString("text"),
+                                            recentMessage.getInt("unseenCount"),
+                                            recentMessage.getString("dateSent"),
+                                            recentMessage.getBoolean("seen")
+                                    )
                             );
-                            mChats.add(user);
-                            if(getActivity() != null)
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mAdapter.notifyDataSetChanged();
-                                    }
-                                });
+                            mFriends.add(friend);
                         }
-                    } catch (JSONException e){
+                        if (getActivity() != null)
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mAdapter.notifyDataSetChanged();
+                                }
+                            });
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
@@ -115,12 +124,12 @@ public class ChatsFragment extends Fragment {
 
 
     public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ChatsViewHolder> {
-        private Context mContext;
-        private List<User> list;
+        private final Context mContext;
+        private final List<Friend> friends;
 
-        public ChatsAdapter(Context context, List<User> users) {
+        public ChatsAdapter(Context context, List<Friend> friends) {
             mContext = context;
-            list = users;
+            this.friends = friends;
         }
 
         @Override
@@ -132,19 +141,31 @@ public class ChatsFragment extends Fragment {
         @Override
         public void onBindViewHolder(ChatsAdapter.ChatsViewHolder holder, final int position) {
 
-            User user = list.get(position);
-            String from = user.getUsername();
+            Friend friend = friends.get(position);
+            String from = friend.getUsername();
             holder.From.setText(from);
-            holder.MessageSubject.setText("Start new chat");
+            holder.RecentMessageText.setText(friend.getRecentMessage().getText());
             holder.Item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Session.SelectedUser = list.get(position);
+                    Session.SelectedFriend = friends.get(position);
                     startActivity(new Intent(getActivity(), MessageActivity.class));
+                    getActivity().overridePendingTransition(0, 0);
+                    getActivity().finish();
                 }
             });
-
-            File picture = FileUtil.getImageFileUserData(mContext, user);
+            if (friend.getRecentMessage().getSenderId() == Session.LoggedInUser.getUserId()) {
+                if (friend.getRecentMessage().isSeen())
+                    holder.SeenCheck.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.seen_vector));
+                else
+                    holder.SeenCheck.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.delivered_vector));
+            } else {
+                if (!friend.getRecentMessage().isSeen()) {
+                    holder.RecentMessageText.setTextColor(ContextCompat.getColor(mContext, R.color.text_color));
+                }
+                holder.SeenCheck.setVisibility(View.GONE);
+            }
+            File picture = FileUtil.getImageFileUserData(mContext, friend.getUserId(), friend.getUsername(), friend.getPicture(), friend.getPictureVersion());
             Picasso.with(getActivity())
                     .load(picture)
                     .placeholder(R.drawable.user_vector)
@@ -153,21 +174,22 @@ public class ChatsFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return list.size();
+            return friends.size();
         }
 
         public class ChatsViewHolder extends RecyclerView.ViewHolder {
 
-            ImageView Icon;
-            TextView From, MessageSubject, Time, UnreadCount;
+            ImageView Icon, SeenCheck;
+            TextView From, RecentMessageText, Time, UnreadCount;
             RelativeLayout Item;
 
             public ChatsViewHolder(View itemView) {
                 super(itemView);
                 Item = itemView.findViewById(R.id.item);
                 Icon = itemView.findViewById(R.id.icon);
+                SeenCheck = itemView.findViewById(R.id.seen_check);
                 From = itemView.findViewById(R.id.name);
-                MessageSubject = itemView.findViewById(R.id.username);
+                RecentMessageText = itemView.findViewById(R.id.recent_message_text);
                 Time = itemView.findViewById(R.id.time);
                 UnreadCount = itemView.findViewById(R.id.unread_count);
             }

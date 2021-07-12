@@ -64,16 +64,29 @@
                         android:text="Name and Username"
                         android:textSize="15sp" />
 
+                    <ImageView
+                        android:id="@+id/seen_check"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_below="@id/name"
+                        android:layout_centerVertical="true"
+                        app:tint="@color/dark_background"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/seen_vector"
+                        android:fontFamily="sans-serif-black" />
+
                     <TextView
-                        android:id="@+id/username"
+                        android:id="@+id/recent_message_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/name"
+                        android:layout_toEndOf="@id/seen_check"
                         android:layout_toStartOf="@id/unread_count"
                         android:fontFamily="sans-serif-black"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:textColor="@color/text_color"
+                        android:textColor="@color/dim_gray"
                         android:text="Message"
                         android:textSize="13sp" />
 
