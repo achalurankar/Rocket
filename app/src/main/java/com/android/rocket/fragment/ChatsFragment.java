@@ -90,20 +90,27 @@ public class ChatsFragment extends Fragment {
                         mFriends.clear();
                         for (int i = 0; i < length; i++) {
                             JSONObject friendJSONObject = friends.getJSONObject(i);
-                            JSONObject recentMessage = friendJSONObject.getJSONObject("recentMessage");
+                            JSONObject recentMessageJSONObject;
+                            Friend.RecentMessage recentMessage = null;
+                            try{
+                                recentMessageJSONObject = friendJSONObject.getJSONObject("recentMessage");
+                                recentMessage = new Friend.RecentMessage(
+                                        recentMessageJSONObject.getInt("senderId"),
+                                        recentMessageJSONObject.getInt("receiverId"),
+                                        recentMessageJSONObject.getString("text"),
+                                        recentMessageJSONObject.getInt("unseenCount"),
+                                        recentMessageJSONObject.getString("dateSent"),
+                                        recentMessageJSONObject.getBoolean("seen")
+                                );
+                            } catch (JSONException e){
+
+                            }
                             Friend friend = new Friend(
                                     friendJSONObject.getInt("userId"),
                                     friendJSONObject.getString("username"),
                                     friendJSONObject.getString("picture"),
                                     friendJSONObject.getLong("pictureVersion"),
-                                    new Friend.RecentMessage(
-                                            recentMessage.getInt("senderId"),
-                                            recentMessage.getInt("receiverId"),
-                                            recentMessage.getString("text"),
-                                            recentMessage.getInt("unseenCount"),
-                                            recentMessage.getString("dateSent"),
-                                            recentMessage.getBoolean("seen")
-                                    )
+                                    recentMessage
                             );
                             mFriends.add(friend);
                         }
@@ -144,7 +151,9 @@ public class ChatsFragment extends Fragment {
             Friend friend = friends.get(position);
             String from = friend.getUsername();
             holder.From.setText(from);
-            holder.RecentMessageText.setText(friend.getRecentMessage().getText());
+            holder.SeenCheck.setVisibility(View.GONE);
+            boolean rmExists = friend.getRecentMessage() != null;
+            holder.RecentMessageText.setText(rmExists ? friend.getRecentMessage().getText() : "start new chat");
             holder.Item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -154,16 +163,16 @@ public class ChatsFragment extends Fragment {
                     getActivity().finish();
                 }
             });
-            if (friend.getRecentMessage().getSenderId() == Session.LoggedInUser.getUserId()) {
+            if (rmExists && friend.getRecentMessage().getSenderId() == Session.LoggedInUser.getUserId()) {
+                holder.SeenCheck.setVisibility(View.VISIBLE);
                 if (friend.getRecentMessage().isSeen())
                     holder.SeenCheck.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.seen_vector));
                 else
                     holder.SeenCheck.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.delivered_vector));
             } else {
-                if (!friend.getRecentMessage().isSeen()) {
+                if (rmExists && !friend.getRecentMessage().isSeen()) {
                     holder.RecentMessageText.setTextColor(ContextCompat.getColor(mContext, R.color.text_color));
                 }
-                holder.SeenCheck.setVisibility(View.GONE);
             }
             File picture = FileUtil.getImageFileUserData(mContext, friend.getUserId(), friend.getUsername(), friend.getPicture(), friend.getPictureVersion());
             Picasso.with(getActivity())
