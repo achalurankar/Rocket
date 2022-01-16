@@ -2,4 +2,4 @@
 
 ## Simple Chat Application
 
-### With reply feature and notifications
+### With reply feature and notifications using FCM and Firebase Database
